@@ -324,8 +324,8 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
   </div>
   <!-- Paso 3 -->
   <div class="wstep" id="ag-3">
-    <p class="dl">Paso 3 de 3 — Confirma y paga</p>
-    <h2 class="dh" style="font-size:clamp(28px,4vw,42px);margin-bottom:24px;">Revisa y <em>transfiere</em></h2>
+    <p class="dl">Paso 3 de 3 — Revisa y aparta</p>
+    <h2 class="dh" style="font-size:clamp(28px,4vw,42px);margin-bottom:24px;">Confirma tu lugar<br>y <em>recibe los datos de pago</em></h2>
     <div class="prog"><div class="pd done"></div><div class="pd done"></div><div class="pd act"></div></div>
     <div class="rcard">
       <div class="rrow"><span class="rl">Servicio</span><span class="rv">Sesión de Angeloterapia</span></div>
@@ -348,10 +348,10 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
         </div>
       </div>
       <div class="pdato"><span>Monto exacto</span><strong>$500.00 MXN</strong></div>
-      <p class="paviso">⏳ <strong>Tienes 24 horas</strong> para realizar la transferencia. Si no llega el pago, tu lugar se libera automáticamente.</p>
+      <p class="paviso">📧 Al dar clic en el botón recibirás un correo con estos datos de pago. <strong>Tienes 24 horas</strong> para realizar la transferencia y confirmar tu sesión.</p>
     </div>
     <div id="error-reserva"></div>
-    <button class="btn-p" id="btn-confirmar" onclick="confirmarReserva()">Ya hice mi transferencia ✓</button>
+    <button class="btn-p" id="btn-confirmar" onclick="confirmarReserva()">Apartar mi lugar — recibiré los datos de pago por correo →</button>
     <button class="btn-g" onclick="agPaso(2)">← Editar mis datos</button>
   </div>
   <!-- Paso 4: pendiente -->
@@ -570,7 +570,7 @@ function validarAg2() {
 
 async function confirmarReserva() {
   const btn = document.getElementById('btn-confirmar');
-  btn.disabled = true; btn.textContent = 'Guardando...';
+  btn.disabled = true; btn.textContent = 'Apartando tu lugar...';
   document.getElementById('error-reserva').innerHTML = '';
   const nombre = document.getElementById('inp-nom').value;
   const email = document.getElementById('inp-email').value;
