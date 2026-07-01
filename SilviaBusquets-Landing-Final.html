@@ -471,9 +471,19 @@ function horaBloquead(fs, h) {
   return bloqueos.some(b => b.tipo === 'slot' && b.fecha === fs && b.hora === h);
 }
 
+function horariosDelDia(diaSemana) {
+  // Usa horarios_por_dia si existe, si no cae al array genérico
+  if(cfg.horarios_por_dia && cfg.horarios_por_dia[diaSemana]) {
+    return cfg.horarios_por_dia[diaSemana];
+  }
+  return cfg.horarios_disponibles || [];
+}
+
 function tieneHorasLibres(fs) {
   if(estaBloquead(fs)) return false;
-  return cfg.horarios_disponibles.some(h => !slotsOcupados.includes(fs+'|'+h) && !horaBloquead(fs, h));
+  const diaSemana = new Date(fs + 'T12:00:00').getDay();
+  const horas = horariosDelDia(diaSemana);
+  return horas.some(h => !slotsOcupados.includes(fs+'|'+h) && !horaBloquead(fs, h));
 }
 
 function renderCal() {
@@ -507,7 +517,13 @@ function cambiarMes(d) { mesActual.setMonth(mesActual.getMonth()+d); renderCal()
 function renderHorarios() {
   const grid = document.getElementById('h-grid'); grid.innerHTML = '';
   const fs = isoF(fechaSel);
-  (cfg.horarios_disponibles || []).forEach(h => {
+  const diaSemana = fechaSel.getDay();
+  const horas = horariosDelDia(diaSemana);
+  if(horas.length === 0) {
+    grid.innerHTML = '<p style="font-size:14px;color:var(--ca2);grid-column:1/-1;">No hay horarios disponibles para este día.</p>';
+    return;
+  }
+  horas.sort().forEach(h => {
     const ocup = slotsOcupados.includes(fs+'|'+h) || horaBloquead(fs, h);
     const btn = document.createElement('button');
     btn.className = 'hb' + (ocup?' ocup':'') + (horaSel===h?' sel':'');
