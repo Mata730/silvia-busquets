@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FAF6F0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Silvia Busquets">
+<title>Silvia Busquets · Angeloterapia</title>
+<meta name="description" content="Sesiones de angeloterapia en línea con Silvia Busquets. Más de 15 años de experiencia en sanación holística.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+:root{
+  --v:#0F5132;--vv:#50C878;--cr:#FAF6F0;--do:#D4AF7A;
+  --ca:#3A3A3A;--ca2:#5c5c5c;--vm:#1a6b43;
+  --b:rgba(15,81,50,0.12);--b2:rgba(15,81,50,0.22);
+  --r:8px;--r2:12px;--ease:cubic-bezier(0.16,1,0.3,1);
+}
+body{font-family:'Inter',sans-serif;background:var(--cr);color:var(--ca);line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 40px;height:64px;display:flex;justify-content:space-between;align-items:center;transition:background .35s,border-color .35s;border-bottom:1px solid transparent;}
+nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-bottom-color:var(--b);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:var(--v);text-decoration:none;}
+.nav-cta{font-size:13px;font-weight:500;color:var(--v);text-decoration:none;border:1px solid var(--v);padding:8px 22px;border-radius:40px;transition:background .18s,color .18s;}
+.nav-cta:hover{background:var(--v);color:var(--cr);}
+@media(max-width:560px){nav{padding:0 20px;}}
+#home{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 24px 80px;}
+.kicker{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--do);font-weight:500;margin-bottom:24px;opacity:0;animation:fadeUp .7s .15s var(--ease) forwards;}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,8vw,88px);font-weight:300;line-height:1.05;color:var(--v);margin-bottom:20px;max-width:680px;text-wrap:balance;letter-spacing:-0.02em;opacity:0;animation:fadeUp .8s .28s var(--ease) forwards;}
+.hero-h1 em{font-style:italic;color:var(--do);}
+.hero-sub{font-size:clamp(15px,2vw,17px);font-weight:300;color:var(--ca2);max-width:400px;margin-bottom:52px;line-height:1.75;opacity:0;animation:fadeUp .7s .42s var(--ease) forwards;}
+.home-menu{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:320px;opacity:0;animation:fadeUp .7s .55s var(--ease) forwards;}
+.mb{width:100%;display:flex;align-items:center;justify-content:space-between;background:white;border:1px solid var(--b2);border-radius:var(--r2);padding:18px 22px;font-size:15px;font-weight:400;color:var(--ca);cursor:pointer;text-decoration:none;transition:border-color .18s,background .18s,transform .15s;text-align:left;font-family:inherit;}
+.mb:hover{border-color:var(--v);background:rgba(15,81,50,.03);transform:translateX(2px);}
+.mb-arr{font-size:18px;color:var(--v);transition:transform .18s;}
+.mb:hover .mb-arr{transform:translateX(3px);}
+.mb-main{background:var(--v);border-color:var(--v);color:var(--cr);font-weight:500;}
+.mb-main .mb-arr{color:var(--vv);}
+.mb-main:hover{background:var(--vm);border-color:var(--vm);}
+.sep{width:32px;height:1px;background:var(--b2);margin:4px auto;}
+.dv{display:none;position:fixed;inset:0;z-index:150;background:var(--cr);overflow-y:auto;opacity:0;transition:opacity .3s var(--ease);}
+.dv.open{display:block;}
+.dv.visible{opacity:1;}
+.di{max-width:640px;margin:0 auto;padding:96px 40px 80px;transform:translateY(14px);transition:transform .32s var(--ease);}
+.dv.visible .di{transform:translateY(0);}
+.back{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--v);cursor:pointer;border:none;background:none;padding:0;margin-bottom:40px;font-family:inherit;transition:opacity .15s;}
+.back:hover{opacity:.6;}
+.dl{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--do);font-weight:500;margin-bottom:16px;}
+.dh{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,54px);font-weight:300;line-height:1.08;color:var(--v);margin-bottom:32px;text-wrap:balance;letter-spacing:-0.02em;}
+.dh em{font-style:italic;color:var(--do);}
+.dbody{font-size:16px;font-weight:300;color:var(--ca);line-height:1.8;max-width:56ch;}
+.dbody p{margin-bottom:14px;}
+.ddiv{height:1px;background:var(--b);margin:36px 0;}
+@media(max-width:560px){.di{padding:84px 20px 60px;}}
+.qe-cards{display:flex;flex-direction:column;gap:1px;background:var(--b);border-radius:var(--r2);overflow:hidden;margin-top:32px;}
+.qe{background:white;padding:20px 24px;display:flex;gap:16px;align-items:flex-start;}
+.qe-ic{font-size:20px;flex-shrink:0;margin-top:2px;}
+.qe h4{font-size:14px;font-weight:500;color:var(--v);margin-bottom:4px;}
+.qe p{font-size:14px;font-weight:300;color:var(--ca2);line-height:1.6;}
+.steps{display:flex;flex-direction:column;margin-top:32px;}
+.sr{display:grid;grid-template-columns:44px 1fr;gap:20px;padding:22px 0;border-top:1px solid var(--b);align-items:start;}
+.sn{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:rgba(15,81,50,.22);line-height:1;padding-top:4px;}
+.sr h3{font-size:15px;font-weight:500;color:var(--v);margin-bottom:4px;}
+.sr p{font-size:14px;font-weight:300;color:var(--ca2);line-height:1.65;}
+@media(max-width:480px){.sr{grid-template-columns:1fr;gap:6px;}.sn{display:none;}}
+.sphoto{width:100%;aspect-ratio:4/3;background:rgba(15,81,50,.06);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;margin-bottom:32px;border:1px solid var(--b);overflow:hidden;}
+.sphoto span{font-size:13px;color:var(--ca2);font-style:italic;}
+.discs{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+.disc{font-size:13px;color:var(--v);border:1px solid var(--b2);border-radius:40px;padding:5px 15px;background:white;transition:background .15s,border-color .15s;cursor:default;}
+.disc:hover{background:var(--v);color:var(--cr);border-color:var(--v);}
+.tl{display:flex;flex-direction:column;margin-top:32px;}
+.tlr{display:grid;grid-template-columns:96px 1fr;gap:20px;padding:18px 0;border-top:1px solid var(--b);}
+.tly{font-size:12px;font-weight:500;color:var(--do);letter-spacing:.5px;padding-top:3px;line-height:1.4;}
+.tlr h4{font-size:15px;font-weight:500;color:var(--v);margin-bottom:4px;}
+.tlr p{font-size:13px;font-weight:300;color:var(--ca2);line-height:1.65;}
+@media(max-width:480px){.tlr{grid-template-columns:1fr;gap:4px;}}
+.tc{display:flex;flex-direction:column;gap:14px;margin-top:32px;}
+.tcard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:26px;}
+.tq{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--ca);line-height:1.65;margin-bottom:14px;}
+.tq::before{content:'\201C';color:var(--do);font-size:32px;line-height:0;vertical-align:-10px;margin-right:3px;}
+.tau{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--do);}
+.pbox{background:var(--v);border-radius:var(--r2);padding:48px 40px;text-align:center;margin-top:12px;}
+.pnum{font-family:'Cormorant Garamond',serif;font-size:clamp(72px,14vw,108px);font-weight:300;color:var(--cr);line-height:1;display:block;margin-bottom:6px;letter-spacing:-0.02em;}
+.pdet{font-size:13px;color:rgba(250,246,240,.5);margin-bottom:28px;}
+.pdesc{font-size:15px;font-weight:300;color:rgba(250,246,240,.75);max-width:340px;margin:0 auto 32px;line-height:1.7;}
+.btn-ag{display:inline-block;background:var(--vv);color:var(--v);font-weight:500;font-size:15px;padding:14px 34px;border-radius:40px;text-decoration:none;transition:opacity .18s,transform .15s;cursor:pointer;border:none;font-family:inherit;}
+.btn-ag:hover{opacity:.88;transform:translateY(-1px);}
+@media(max-width:480px){.pbox{padding:36px 22px;}}
+/* CALENDARIO */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.cal-mes{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--v);}
+.cal-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--b2);background:white;cursor:pointer;font-size:16px;color:var(--v);display:flex;align-items:center;justify-content:center;transition:background .15s;font-family:inherit;}
+.cal-btn:hover{background:var(--v);color:var(--cr);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cdl{text-align:center;font-size:11px;font-weight:500;color:var(--ca2);padding:6px 0;letter-spacing:.5px;}
+.cd{aspect-ratio:1;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:default;transition:all .15s;position:relative;}
+.cd.av{background:white;border:1px solid var(--b2);color:var(--ca);cursor:pointer;}
+.cd.av:hover{background:var(--v);color:white;border-color:var(--v);}
+.cd.sel{background:var(--v);color:white;border:1px solid var(--v);}
+.cd.emp,.cd.pas,.cd.blk{color:rgba(90,90,90,.2);}
+.cd.blk{background:rgba(0,0,0,.02);border:1px dashed var(--b);}
+.cd.hoy::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--vv);}
+.cd.sel.hoy::after{background:rgba(250,246,240,.5);}
+.cal-ley{display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ca2);}
+.leg-d{width:10px;height:10px;border-radius:3px;}
+/* HORARIOS */
+.h-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0;}
+.hb{padding:12px 8px;border-radius:var(--r);border:1px solid var(--b2);background:white;font-size:14px;color:var(--ca);cursor:pointer;font-family:inherit;transition:all .15s;text-align:center;}
+.hb:hover{border-color:var(--v);background:rgba(15,81,50,.04);color:var(--v);}
+.hb.sel{background:var(--v);color:white;border-color:var(--v);}
+.hb.ocup{color:rgba(90,90,90,.3);cursor:not-allowed;background:rgba(0,0,0,.02);}
+/* FORM */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--v);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--b2);border-radius:var(--r);background:white;font-size:15px;font-family:inherit;color:var(--ca);outline:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--v);}
+/* RESUMEN */
+.rcard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:24px;margin-bottom:20px;}
+.rrow{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--b);}
+.rrow:last-child{border-bottom:none;}
+.rl{font-size:13px;color:var(--ca2);}
+.rv{font-size:14px;font-weight:500;color:var(--ca);text-align:right;max-width:200px;}
+.rtot .rl{font-weight:500;color:var(--v);font-size:15px;}
+.rtot .rv{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--v);}
+.pagobox{background:rgba(15,81,50,.05);border:1px solid var(--b2);border-radius:var(--r2);padding:22px;margin-bottom:20px;}
+.pagobox h4{font-size:14px;font-weight:500;color:var(--v);margin-bottom:14px;}
+.pdato{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b);}
+.pdato:last-of-type{border-bottom:none;}
+.pdato span{font-size:13px;color:var(--ca2);}
+.pdato strong{font-size:14px;font-weight:500;color:var(--ca);font-family:monospace;letter-spacing:.5px;}
+.copybtn{font-size:11px;background:var(--v);color:white;border:none;border-radius:4px;padding:3px 8px;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+.copybtn:hover{opacity:.8;}
+.paviso{font-size:13px;color:var(--ca2);margin-top:12px;line-height:1.6;padding-top:12px;border-top:1px solid var(--b);}
+.paviso strong{color:var(--ca);font-weight:500;}
+.btn-p{width:100%;padding:16px;border-radius:40px;background:var(--v);color:var(--cr);font-size:15px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .18s,transform .15s;}
+.btn-p:hover{background:var(--vm);transform:translateY(-1px);}
+.btn-p:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-g{width:100%;padding:14px;border-radius:40px;background:transparent;color:var(--v);font-size:14px;font-weight:500;font-family:inherit;border:1px solid var(--b2);cursor:pointer;transition:all .15s;margin-top:10px;}
+.btn-g:hover{border-color:var(--v);background:rgba(15,81,50,.04);}
+.pend-icon{width:64px;height:64px;border-radius:50%;background:rgba(212,175,122,.15);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 24px;}
+.alerta{background:rgba(15,81,50,.05);border:1px solid var(--b2);border-radius:var(--r);padding:16px;font-size:13px;color:var(--ca2);line-height:1.7;margin-top:16px;}
+.alerta strong{color:var(--ca);font-weight:500;}
+.wstep{display:none;}
+.wstep.wa{display:block;}
+.prog{display:flex;gap:6px;justify-content:center;margin-bottom:28px;}
+.pd{width:6px;height:6px;border-radius:50%;background:var(--b2);transition:background .2s;}
+.pd.done{background:var(--vv);}
+.pd.act{background:var(--v);}
+.loading-msg{text-align:center;padding:40px 20px;font-size:14px;color:var(--ca2);}
+.error-msg{background:#fef0f0;border:1px solid #f5c6c6;border-radius:var(--r);padding:14px 16px;font-size:13px;color:#c0392b;margin-top:12px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.di{transform:none!important;}}
+</style>
+</head>
+<body>
+<nav id="nav">
+  <a class="nav-logo" href="#" onclick="goHome(event)">Silvia Busquets</a>
+  <a href="#" onclick="openView('agendar',event)" class="nav-cta">Agendar sesión</a>
+</nav>
+
+<!-- HOME -->
+<section id="home">
+  <p class="kicker">Angeloterapia · Sesiones en línea</p>
+  <h1 class="hero-h1">Tus ángeles tienen<br>un mensaje <em>para ti</em></h1>
+  <p class="hero-sub">Sesiones individuales con Silvia Busquets — 15 años acompañando procesos de sanación.</p>
+  <div class="home-menu">
+    <a href="#" class="mb mb-main" onclick="openView('agendar',event)"><span>Agendar mi sesión</span><span class="mb-arr">→</span></a>
+    <div class="sep"></div>
+    <a href="#" class="mb" onclick="openView('que-es',event)"><span>¿Qué es la angeloterapia?</span><span class="mb-arr">→</span></a>
+    <a href="#" class="mb" onclick="openView('como',event)"><span>¿Cómo es una sesión?</span><span class="mb-arr">→</span></a>
+    <a href="#" class="mb" onclick="openView('silvia',event)"><span>Sobre Silvia</span><span class="mb-arr">→</span></a>
+    <a href="#" class="mb" onclick="openView('trayectoria',event)"><span>Trayectoria y formación</span><span class="mb-arr">→</span></a>
+    <a href="#" class="mb" onclick="openView('testimonios',event)"><span>Testimonios</span><span class="mb-arr">→</span></a>
+    <a href="#" class="mb" onclick="openView('precio',event)"><span>Precio · $500 MXN</span><span class="mb-arr">→</span></a>
+  </div>
+</section>
+
+<!-- QUÉ ES -->
+<div id="view-que-es" class="dv"><div class="di">
+  <button class="back" onclick="closeView('que-es')">← Regresar</button>
+  <p class="dl">¿Qué es?</p>
+  <h2 class="dh">Una conversación<br>con tu <em>guía interior</em></h2>
+  <div class="dbody"><p>La angeloterapia trabaja con la energía y los mensajes de los ángeles para ayudarte a identificar bloqueos, sanar heridas emocionales y reconectar con tu camino de vida.</p><p>No necesitas creer en nada específico. Solo necesitas llegar abierta y dispuesta a escuchar.</p></div>
+  <div class="qe-cards">
+    <div class="qe"><span class="qe-ic">🌿</span><div><h4>Sanación emocional</h4><p>Libera bloqueos y heridas desde la raíz energética.</p></div></div>
+    <div class="qe"><span class="qe-ic">✨</span><div><h4>Claridad y dirección</h4><p>Recibe mensajes de tus ángeles sobre situaciones de tu vida.</p></div></div>
+    <div class="qe"><span class="qe-ic">💚</span><div><h4>Reconexión contigo</h4><p>Recupera tu intuición, tu fuerza interior y tu propósito.</p></div></div>
+    <div class="qe"><span class="qe-ic">📞</span><div><h4>100% en línea</h4><p>Llamada telefónica — sin video, sin cámara.</p></div></div>
+  </div>
+  <div class="ddiv"></div>
+  <a href="#" onclick="openView('agendar',event)" class="mb mb-main"><span>Agendar mi sesión</span><span class="mb-arr">→</span></a>
+</div></div>
+
+<!-- CÓMO -->
+<div id="view-como" class="dv"><div class="di">
+  <button class="back" onclick="closeView('como')">← Regresar</button>
+  <p class="dl">El proceso</p>
+  <h2 class="dh">Simple, profunda<br>y <em>desde donde estés</em></h2>
+  <div class="steps">
+    <div class="sr"><div class="sn">01</div><div><h3>Elige tu fecha y hora</h3><p>Seleccionas el horario disponible con al menos 2 días de anticipación.</p></div></div>
+    <div class="sr"><div class="sn">02</div><div><h3>Llena tus datos</h3><p>Nombre, correo y teléfono al que te llamará Silvia.</p></div></div>
+    <div class="sr"><div class="sn">03</div><div><h3>Recibes los datos de pago</h3><p>Te llega un correo con la CLABE de Silvia. Tienes 24 horas para transferir $500 MXN.</p></div></div>
+    <div class="sr"><div class="sn">04</div><div><h3>Silvia verifica y confirma</h3><p>En cuanto llega tu transferencia, Silvia confirma y recibes tu guía de preparación.</p></div></div>
+    <div class="sr"><div class="sn">05</div><div><h3>Tu sesión</h3><p>A la hora acordada, Silvia te llama. La sesión dura de 1 a 2 horas.</p></div></div>
+  </div>
+  <div class="ddiv"></div>
+  <a href="#" onclick="openView('agendar',event)" class="mb mb-main"><span>Elegir mi fecha</span><span class="mb-arr">→</span></a>
+</div></div>
+
+<!-- SILVIA -->
+<div id="view-silvia" class="dv"><div class="di">
+  <button class="back" onclick="closeView('silvia')">← Regresar</button>
+  <p class="dl">Sobre Silvia</p>
+  <h2 class="dh">Más de 15 años<br>en el camino de <em>la sanación</em></h2>
+  <div class="sphoto"><span>Foto de Silvia (agregar aquí)</span></div>
+  <div class="dbody">
+    <p>Llegué a la salud holística por necesidad propia — y descubrí que sanar es posible desde adentro.</p>
+    <p>Durante 6 años fui colaboradora, coordinadora y sanadora en el Centro Holístico Samasati de la Escuela Sirio en Juriquilla, Querétaro.</p>
+    <p>Fue ahí donde descubrí mi don de sanación energética y donde la angeloterapia se convirtió en mi herramienta principal.</p>
+  </div>
+  <p class="dl" style="margin-top:32px;">Disciplinas</p>
+  <div class="discs">
+    <span class="disc">Angeloterapia</span><span class="disc">Thetahealing</span><span class="disc">Ho'oponopono</span><span class="disc">EFT</span><span class="disc">Reiki Usui</span><span class="disc">Constelaciones Familiares</span><span class="disc">Método Louise Hay</span><span class="disc">Meditación guiada</span><span class="disc">Lectura de chakras</span><span class="disc">Sanación por imposición de manos</span><span class="disc">Biomagnetismo</span><span class="disc">Yoga terapéutico</span><span class="disc">Feldenkrais</span><span class="disc">Danza Primal</span><span class="disc">Radiestesia</span><span class="disc">Afirmaciones</span><span class="disc">Cuencos de sanación</span><span class="disc">Piedras de sanación</span><span class="disc">Trabajo en el espejo</span>
+  </div>
+  <div class="ddiv"></div>
+  <a href="#" onclick="openView('trayectoria',event)" class="mb"><span>Ver trayectoria completa</span><span class="mb-arr">→</span></a>
+</div></div>
+
+<!-- TRAYECTORIA -->
+<div id="view-trayectoria" class="dv"><div class="di">
+  <button class="back" onclick="closeView('trayectoria')">← Regresar</button>
+  <p class="dl">Trayectoria</p>
+  <h2 class="dh">Un camino construido<br><em>disciplina por disciplina</em></h2>
+  <div class="tl">
+    <div class="tlr"><div class="tly">2007–2014</div><div><h4>Yoga Terapéutico · Arati Jurica</h4><p>7 años como practicante — base del trabajo consciente con el cuerpo.</p></div></div>
+    <div class="tlr"><div class="tly">2008–2011</div><div><h4>Trabajo interior y constelaciones</h4><p>Constelaciones Familiares con el Dr. Daniel Carlón. Método Pathwork basado en Eva Pierrakos. Semiología de la Vida Cotidiana con Alfonso Ruiz.</p></div></div>
+    <div class="tlr"><div class="tly">2010–2015</div><div><h4>Escuela Sirio · Samasati</h4><p>Control Mental · Psicodinamia · Vivencias · Ensoñaciones.</p></div></div>
+    <div class="tlr"><div class="tly">2011</div><div><h4>Biomagnetismo · Dr. Gaspar</h4><p>Curso intensivo, octubre 2011.</p></div></div>
+    <div class="tlr"><div class="tly">2013</div><div><h4>Thetahealing · Louise Hay · Feldenkrais</h4><p>ADN Básico con Gisela López Marmolejo. Sana Tu Vida con Verónica Hernández. Feldenkrais en Arati Jurica.</p></div></div>
+    <div class="tlr"><div class="tly">2010–2016</div><div><h4>Instructora · Escuela Sirio</h4><p>6 años en Samasati. Ho'oponopono, Sanación Hawaiana, EFT, meditaciones, lectura de chakras, taller 'Yo, mi mejor amigo'.</p></div></div>
+    <div class="tlr"><div class="tly">2014</div><div><h4>Radiestesia y Péndulo</h4><p>Taller con Rita María Arróniz Pérez.</p></div></div>
+    <div class="tlr"><div class="tly">2015</div><div><h4>Reiki Usui Japonés · 1er Grado</h4><p>Canalización y transmisión de energía sanadora.</p></div></div>
+    <div class="tlr"><div class="tly">2016</div><div><h4>Angelólogos · Doreen Virtue</h4><p>3 módulos, agosto 2016. Instructora: Mónica Peón Carmona.</p></div></div>
+    <div class="tlr"><div class="tly">2018</div><div><h4>Biomagnetismo · Dr. Heriberto Ruz</h4><p>Curso intensivo, marzo 2018.</p></div></div>
+    <div class="tlr"><div class="tly">Hoy</div><div><h4>Angeloterapeuta en línea</h4><p>Sesiones individuales vía llamada telefónica desde donde estés.</p></div></div>
+  </div>
+</div></div>
+
+<!-- TESTIMONIOS -->
+<div id="view-testimonios" class="dv"><div class="di">
+  <button class="back" onclick="closeView('testimonios')">← Regresar</button>
+  <p class="dl">Testimonios</p>
+  <h2 class="dh">Lo que dicen quienes<br>ya vivieron <em>una sesión</em></h2>
+  <div class="tc">
+    <div class="tcard"><p class="tq">Llegué sin saber qué esperar y salí con una claridad que no había sentido en años.</p><span class="tau">A. M. · Ciudad de México</span></div>
+    <div class="tcard"><p class="tq">Nunca había hecho algo así. Desde la primera sesión empecé a ver las cosas diferente.</p><span class="tau">L. R. · Guadalajara</span></div>
+    <div class="tcard"><p class="tq">Silvia tiene un don especial. Me sentí acompañada y segura en todo momento.</p><span class="tau">M. V. · Monterrey</span></div>
+  </div>
+  <p style="font-size:12px;color:var(--ca2);font-style:italic;margin-top:20px;">* Testimonios en proceso de recopilación con nombres reales.</p>
+  <div class="ddiv"></div>
+  <a href="#" onclick="openView('agendar',event)" class="mb mb-main"><span>Quiero mi sesión</span><span class="mb-arr">→</span></a>
+</div></div>
+
+<!-- PRECIO -->
+<div id="view-precio" class="dv"><div class="di">
+  <button class="back" onclick="closeView('precio')">← Regresar</button>
+  <p class="dl">Tu sesión</p>
+  <h2 class="dh">Una sesión que puede<br><em>cambiarlo todo</em></h2>
+  <div class="pbox">
+    <span class="pnum">$500</span>
+    <p class="pdet">MXN · 1 a 2 horas · llamada telefónica · 100% en línea</p>
+    <p class="pdesc">Pago único por transferencia bancaria. Sin comisiones ni pagos adicionales.</p>
+    <button class="btn-ag" onclick="openView('agendar',event)">Elegir mi fecha y hora</button>
+  </div>
+</div></div>
+
+<!-- AGENDAR -->
+<div id="view-agendar" class="dv"><div class="di">
+  <button class="back" id="back-ag" onclick="backAgendar()">← Regresar</button>
+  <!-- Paso 1 -->
+  <div class="wstep wa" id="ag-1">
+    <p class="dl">Paso 1 de 3 — Elige tu fecha</p>
+    <h2 class="dh" style="font-size:clamp(28px,4vw,42px);margin-bottom:24px;">¿Qué día <em>te viene bien?</em></h2>
+    <div class="prog"><div class="pd act"></div><div class="pd"></div><div class="pd"></div></div>
+    <div class="cal-nav">
+      <button class="cal-btn" onclick="cambiarMes(-1)">‹</button>
+      <span class="cal-mes" id="cal-mes"></span>
+      <button class="cal-btn" onclick="cambiarMes(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-ley">
+      <div class="leg"><div class="leg-d" style="background:white;border:1px solid var(--b2);"></div>Disponible</div>
+      <div class="leg"><div class="leg-d" style="background:var(--v);"></div>Seleccionado</div>
+      <div class="leg"><div class="leg-d" style="background:rgba(0,0,0,.02);border:1px dashed var(--b);"></div>No disponible</div>
+    </div>
+    <div style="margin-top:28px;">
+      <button class="btn-p" id="btn-ag2" onclick="agPaso(2)" disabled>Siguiente — elegir hora →</button>
+    </div>
+  </div>
+  <!-- Paso 2 -->
+  <div class="wstep" id="ag-2">
+    <p class="dl">Paso 2 de 3 — Hora y datos</p>
+    <h2 class="dh" style="font-size:clamp(28px,4vw,42px);margin-bottom:8px;">¿A qué hora <em>te acomoda?</em></h2>
+    <p style="font-size:14px;color:var(--ca2);margin-bottom:20px;" id="fecha-lbl"></p>
+    <div class="prog"><div class="pd done"></div><div class="pd act"></div><div class="pd"></div></div>
+    <div class="h-grid" id="h-grid"></div>
+    <div style="margin-top:20px;">
+      <div class="field"><label>Nombre completo</label><input type="text" id="inp-nom" placeholder="Como aparece en tu identificación" oninput="validarAg2()"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="inp-email" placeholder="Te mandaremos la confirmación aquí" oninput="validarAg2()"></div>
+      <div class="field"><label>Teléfono (al que te llamará Silvia)</label><input type="tel" id="inp-tel" placeholder="10 dígitos" oninput="validarAg2()"></div>
+    </div>
+    <button class="btn-p" id="btn-ag3" onclick="agPaso(3)" disabled>Ver resumen y datos de pago →</button>
+    <button class="btn-g" onclick="agPaso(1)">← Cambiar fecha</button>
+  </div>
+  <!-- Paso 3 -->
+  <div class="wstep" id="ag-3">
+    <p class="dl">Paso 3 de 3 — Confirma y paga</p>
+    <h2 class="dh" style="font-size:clamp(28px,4vw,42px);margin-bottom:24px;">Revisa y <em>transfiere</em></h2>
+    <div class="prog"><div class="pd done"></div><div class="pd done"></div><div class="pd act"></div></div>
+    <div class="rcard">
+      <div class="rrow"><span class="rl">Servicio</span><span class="rv">Sesión de Angeloterapia</span></div>
+      <div class="rrow"><span class="rl">Fecha</span><span class="rv" id="res-fecha"></span></div>
+      <div class="rrow"><span class="rl">Hora</span><span class="rv" id="res-hora"></span></div>
+      <div class="rrow"><span class="rl">Modalidad</span><span class="rv">Llamada telefónica</span></div>
+      <div class="rrow"><span class="rl">Nombre</span><span class="rv" id="res-nom"></span></div>
+      <div class="rrow"><span class="rl">Correo</span><span class="rv" id="res-email"></span></div>
+      <div class="rrow rtot"><span class="rl">Total</span><span class="rv">$500 MXN</span></div>
+    </div>
+    <div class="pagobox">
+      <h4>Datos para tu transferencia</h4>
+      <div class="pdato"><span>Banco</span><strong id="pg-banco">—</strong></div>
+      <div class="pdato"><span>Titular</span><strong id="pg-titular">—</strong></div>
+      <div class="pdato">
+        <span>CLABE</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <strong id="pg-clabe">—</strong>
+          <button class="copybtn" onclick="copiarCLABE()">Copiar</button>
+        </div>
+      </div>
+      <div class="pdato"><span>Monto exacto</span><strong>$500.00 MXN</strong></div>
+      <p class="paviso">⏳ <strong>Tienes 24 horas</strong> para realizar la transferencia. Si no llega el pago, tu lugar se libera automáticamente.</p>
+    </div>
+    <div id="error-reserva"></div>
+    <button class="btn-p" id="btn-confirmar" onclick="confirmarReserva()">Ya hice mi transferencia ✓</button>
+    <button class="btn-g" onclick="agPaso(2)">← Editar mis datos</button>
+  </div>
+  <!-- Paso 4: pendiente -->
+  <div class="wstep" id="ag-4">
+    <div style="text-align:center;padding-top:20px;">
+      <div class="pend-icon">⏳</div>
+      <p class="dl" style="text-align:center;">Lugar apartado</p>
+      <h2 class="dh" style="text-align:center;font-size:clamp(28px,4vw,42px);margin-bottom:16px;">Esperando<br><em>tu pago</em></h2>
+      <p style="font-size:15px;font-weight:300;color:var(--ca2);line-height:1.75;max-width:360px;margin:0 auto;">Silvia revisará tu transferencia y te enviará la confirmación oficial a <strong id="email-pend" style="color:var(--ca);"></strong></p>
+      <div class="alerta" style="text-align:left;margin-top:24px;">
+        <strong>¿Qué pasa ahora?</strong><br><br>
+        1. Silvia recibe una notificación con tus datos.<br>
+        2. Verifica que llegó tu transferencia de $500 MXN.<br>
+        3. Te manda confirmación oficial + guía de preparación.<br>
+        4. Si en 24 hrs no llega el pago, tu lugar se libera.
+      </div>
+      <div class="rcard" style="margin-top:24px;text-align:left;">
+        <div class="rrow"><span class="rl">Fecha apartada</span><span class="rv" id="pend-fecha"></span></div>
+        <div class="rrow"><span class="rl">Hora</span><span class="rv" id="pend-hora"></span></div>
+        <div class="rrow rtot"><span class="rl">Monto</span><span class="rv" style="font-size:20px;">$500 MXN</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--ca2);margin-top:16px;">¿Dudas? Escríbele a Silvia por <a href="https://instagram.com/silvia_busquets_n" style="color:var(--v);font-weight:500;" target="_blank">Instagram</a></p>
+    </div>
+  </div>
+</div></div>
+
+<script>
+// ── SUPABASE ──
+const SUPA_URL = 'https://axdwfaetbhizdfjnoeib.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4ZHdmYWV0YmhpemRmam5vZWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5MzE5MDQsImV4cCI6MjA5ODUwNzkwNH0.gvQM_PCIxZMjgYqaaiFMK1PFR21TT7A52nueygIyKeE';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ── NAV ──
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll', () => navEl.classList.toggle('scrolled', scrollY > 40), {passive:true});
+
+// ── VISTAS ──
+const home = document.getElementById('home');
+let currentView = null;
+const hist = [];
+
+function openView(id, e) {
+  if(e) e.preventDefault();
+  const el = document.getElementById('view-' + id);
+  if(!el) return;
+  if(currentView) {
+    hist.push(currentView);
+    const c = document.getElementById('view-' + currentView);
+    c.classList.remove('visible');
+    setTimeout(() => { c.classList.remove('open'); c.style.display = 'none'; }, 300);
+  } else {
+    home.style.display = 'none';
+  }
+  currentView = id;
+  el.style.display = 'block';
+  el.scrollTop = 0;
+  if(id === 'agendar') { agPasoN = 1; mostrarPaso(1); cargarDatos(); }
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open', 'visible')));
+}
+
+function closeView(id) {
+  const el = document.getElementById('view-' + id);
+  el.classList.remove('visible');
+  setTimeout(() => {
+    el.classList.remove('open'); el.style.display = 'none';
+    if(hist.length > 0) {
+      const p = hist.pop(); currentView = p;
+      const pe = document.getElementById('view-' + p);
+      pe.style.display = 'block'; pe.scrollTop = 0;
+      requestAnimationFrame(() => requestAnimationFrame(() => pe.classList.add('open', 'visible')));
+    } else { currentView = null; home.style.display = ''; }
+  }, 300);
+}
+
+function goHome(e) { e.preventDefault(); if(!currentView) return; hist.length = 0; closeView(currentView); }
+function backAgendar() { if(agPasoN > 1) agPaso(agPasoN - 1); else { hist.length = 0; closeView('agendar'); } }
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && currentView) { hist.length = 0; closeView(currentView); } });
+
+// ── CONFIG DESDE SUPABASE ──
+let cfg = { clabe: '—', banco: '—', titular: '—', horarios_disponibles: [], dias_disponibles: [], anticipacion_dias: 2, max_dias_adelante: 14 };
+let slotsOcupados = []; // fecha|hora ocupados
+let bloqueos = [];
+
+async function cargarDatos() {
+  try {
+    const [cfgRes, reservasRes, bloqueosRes] = await Promise.all([
+      sb.from('configuracion').select('*').single(),
+      sb.from('reservas').select('fecha,hora').in('estado', ['pendiente','confirmada']),
+      sb.from('bloqueos').select('*')
+    ]);
+    if(cfgRes.data) cfg = cfgRes.data;
+    if(reservasRes.data) slotsOcupados = reservasRes.data.map(r => r.fecha + '|' + r.hora);
+    if(bloqueosRes.data) bloqueos = bloqueosRes.data;
+    document.getElementById('pg-clabe').textContent = cfg.clabe;
+    document.getElementById('pg-banco').textContent = cfg.banco;
+    document.getElementById('pg-titular').textContent = cfg.titular;
+    renderCal();
+  } catch(err) { console.error(err); }
+}
+
+// ── CALENDARIO ──
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DIAS_L = ['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
+let mesActual = new Date(); mesActual.setDate(1);
+let fechaSel = null, horaSel = null, agPasoN = 1;
+
+function isoF(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function fechaLarga(d) {
+  const ds = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  return ds[d.getDay()] + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()].toLowerCase() + ' ' + d.getFullYear();
+}
+
+function estaBloquead(fs) {
+  return bloqueos.some(b => {
+    if(b.tipo === 'rango') return fs >= b.desde && fs <= b.hasta;
+    if(b.tipo === 'dia') return b.fecha === fs;
+    return false;
+  });
+}
+
+function horaBloquead(fs, h) {
+  return bloqueos.some(b => b.tipo === 'slot' && b.fecha === fs && b.hora === h);
+}
+
+function tieneHorasLibres(fs) {
+  if(estaBloquead(fs)) return false;
+  return cfg.horarios_disponibles.some(h => !slotsOcupados.includes(fs+'|'+h) && !horaBloquead(fs, h));
+}
+
+function renderCal() {
+  document.getElementById('cal-mes').textContent = MESES[mesActual.getMonth()] + ' ' + mesActual.getFullYear();
+  const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
+  DIAS_L.forEach(d => { const e = document.createElement('div'); e.className = 'cdl'; e.textContent = d; grid.appendChild(e); });
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const minF = new Date(hoy); minF.setDate(hoy.getDate() + (cfg.anticipacion_dias || 2));
+  const maxF = new Date(hoy); maxF.setDate(hoy.getDate() + (cfg.max_dias_adelante || 14));
+  const pri = new Date(mesActual.getFullYear(), mesActual.getMonth(), 1);
+  const ult = new Date(mesActual.getFullYear(), mesActual.getMonth()+1, 0);
+  for(let i = 0; i < pri.getDay(); i++) { const e = document.createElement('div'); e.className = 'cd emp'; grid.appendChild(e); }
+  for(let d = 1; d <= ult.getDate(); d++) {
+    const fecha = new Date(mesActual.getFullYear(), mesActual.getMonth(), d);
+    const fs = isoF(fecha);
+    const el = document.createElement('div'); el.textContent = d;
+    const esHoy = fecha.getTime() === hoy.getTime(); if(esHoy) el.classList.add('hoy');
+    const diasDisp = cfg.dias_disponibles || [1,2,3,4,5];
+    const disp = fecha >= minF && fecha <= maxF && diasDisp.includes(fecha.getDay()) && tieneHorasLibres(fs);
+    if(fechaSel && fs === isoF(fechaSel)) el.className = 'cd sel' + (esHoy?' hoy':'');
+    else if(disp) { el.className = 'cd av' + (esHoy?' hoy':''); el.onclick = () => selFecha(fecha); }
+    else el.className = 'cd ' + (fecha < minF || fecha > maxF ? 'pas' : 'blk') + (esHoy?' hoy':'');
+    grid.appendChild(el);
+  }
+}
+
+function selFecha(f) { fechaSel = f; horaSel = null; document.getElementById('btn-ag2').disabled = false; renderCal(); }
+function cambiarMes(d) { mesActual.setMonth(mesActual.getMonth()+d); renderCal(); }
+
+// ── HORARIOS ──
+function renderHorarios() {
+  const grid = document.getElementById('h-grid'); grid.innerHTML = '';
+  const fs = isoF(fechaSel);
+  (cfg.horarios_disponibles || []).forEach(h => {
+    const ocup = slotsOcupados.includes(fs+'|'+h) || horaBloquead(fs, h);
+    const btn = document.createElement('button');
+    btn.className = 'hb' + (ocup?' ocup':'') + (horaSel===h?' sel':'');
+    btn.textContent = h; btn.disabled = ocup;
+    if(!ocup) btn.onclick = () => { horaSel = h; renderHorarios(); validarAg2(); };
+    grid.appendChild(btn);
+  });
+}
+
+// ── WIZARD ──
+function mostrarPaso(n) {
+  agPasoN = n;
+  document.querySelectorAll('.wstep').forEach((s,i) => s.classList.toggle('wa', i === n-1));
+  document.getElementById('view-agendar').scrollTop = 0;
+}
+
+function agPaso(n) {
+  if(n === 2) { document.getElementById('fecha-lbl').textContent = fechaLarga(fechaSel); renderHorarios(); validarAg2(); }
+  if(n === 3) {
+    document.getElementById('res-fecha').textContent = fechaLarga(fechaSel);
+    document.getElementById('res-hora').textContent = horaSel + ' hrs';
+    document.getElementById('res-nom').textContent = document.getElementById('inp-nom').value;
+    document.getElementById('res-email').textContent = document.getElementById('inp-email').value;
+    document.getElementById('pg-clabe').textContent = cfg.clabe;
+    document.getElementById('pg-banco').textContent = cfg.banco;
+    document.getElementById('pg-titular').textContent = cfg.titular;
+  }
+  mostrarPaso(n);
+}
+
+function validarAg2() {
+  const ok = horaSel && document.getElementById('inp-nom').value.trim().length > 2 &&
+    document.getElementById('inp-email').value.includes('@') &&
+    document.getElementById('inp-tel').value.trim().length >= 10;
+  document.getElementById('btn-ag3').disabled = !ok;
+}
+
+async function confirmarReserva() {
+  const btn = document.getElementById('btn-confirmar');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  document.getElementById('error-reserva').innerHTML = '';
+  const nombre = document.getElementById('inp-nom').value;
+  const email = document.getElementById('inp-email').value;
+  const tel = document.getElementById('inp-tel').value;
+  const fs = isoF(fechaSel);
+  const reserva = {
+    id: 'R' + Date.now(),
+    nombre, email, tel,
+    fecha: fs,
+    fecha_larga: fechaLarga(fechaSel),
+    hora: horaSel,
+    estado: 'pendiente'
+  };
+  try {
+    const { error } = await sb.from('reservas').insert([reserva]);
+    if(error) throw error;
+    // Notificar a Silvia por mailto
+    const s = encodeURIComponent('Nueva reserva: ' + nombre + ' — ' + reserva.fecha_larga + ' ' + horaSel);
+    const b = encodeURIComponent('¡Tienes una nueva reserva!\n\nNombre: '+nombre+'\nEmail: '+email+'\nTeléfono: '+tel+'\nFecha: '+reserva.fecha_larga+'\nHora: '+horaSel+' hrs\n\nVerifica la transferencia de $500 MXN en tu banco y confirma desde tu panel.');
+    setTimeout(() => window.open('mailto:sabnosti@hotmail.com?subject='+s+'&body='+b, '_blank'), 400);
+    // Paso 4
+    document.getElementById('email-pend').textContent = email;
+    document.getElementById('pend-fecha').textContent = reserva.fecha_larga;
+    document.getElementById('pend-hora').textContent = horaSel + ' hrs';
+    mostrarPaso(4);
+  } catch(err) {
+    document.getElementById('error-reserva').innerHTML = '<div class="error-msg">Hubo un problema al guardar tu reserva. Inténtalo de nuevo o escríbele a Silvia por Instagram.</div>';
+    btn.disabled = false; btn.textContent = 'Ya hice mi transferencia ✓';
+  }
+}
+
+function copiarCLABE() {
+  navigator.clipboard?.writeText(cfg.clabe).then(() => {
+    const b = document.querySelector('.copybtn'); b.textContent = '✓'; setTimeout(() => b.textContent = 'Copiar', 1500);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel · Silvia Busquets</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#0F5132;--vv:#50C878;--cr:#FAF6F0;--do:#D4AF7A;
+  --ca:#3A3A3A;--ca2:#5c5c5c;--vm:#1a6b43;
+  --b:rgba(15,81,50,0.12);--b2:rgba(15,81,50,0.22);
+  --warn:#c17f0a;--wb:#fef9ec;--wbo:#f0d070;
+  --ok:#0F5132;--ob:#edf7f1;--obo:#a8dbb8;
+  --r:8px;--r2:12px;
+}
+body{font-family:'Inter',sans-serif;background:#f5f4f0;color:var(--ca);min-height:100vh;-webkit-font-smoothing:antialiased;}
+/* LOGIN */
+#login-scr{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.lcard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:48px 40px;width:100%;max-width:340px;text-align:center;}
+.llogo{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--v);margin-bottom:8px;}
+.lsub{font-size:13px;color:var(--ca2);margin-bottom:32px;}
+.lcard input{width:100%;padding:12px 14px;border:1px solid var(--b2);border-radius:var(--r);font-size:15px;font-family:inherit;color:var(--ca);outline:none;margin-bottom:12px;transition:border-color .15s;}
+.lcard input:focus{border-color:var(--v);}
+.lbtn{width:100%;padding:13px;border-radius:40px;background:var(--v);color:white;font-size:15px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .18s;}
+.lbtn:hover{background:var(--vm);}
+.lerr{font-size:13px;color:#c0392b;margin-top:10px;display:none;}
+.linfo{font-size:12px;color:var(--ca2);margin-top:16px;line-height:1.5;}
+/* PANEL */
+#panel{display:none;}
+.topbar{background:white;border-bottom:1px solid var(--b);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tlogo{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--v);}
+.tright{display:flex;align-items:center;gap:12px;}
+.bpend{background:var(--wb);color:var(--warn);border:1px solid var(--wbo);border-radius:40px;padding:4px 12px;font-size:12px;font-weight:500;}
+.logoutbtn{font-size:13px;color:var(--ca2);background:none;border:none;cursor:pointer;font-family:inherit;}
+.logoutbtn:hover{color:var(--ca);}
+.pinner{max-width:920px;margin:0 auto;padding:28px 20px 80px;}
+.ptit{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--v);margin-bottom:4px;}
+.psub{font-size:13px;color:var(--ca2);margin-bottom:24px;}
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px;}
+.scard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:16px 18px;}
+.slbl{font-size:11px;font-weight:500;color:var(--ca2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
+.snum{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--v);line-height:1;}
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:22px;border-bottom:1px solid var(--b);overflow-x:auto;}
+.tab{padding:10px 16px;font-size:13px;font-weight:400;color:var(--ca2);cursor:pointer;background:none;border:none;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap;}
+.tab.active{color:var(--v);font-weight:500;border-bottom-color:var(--v);}
+.tc{display:none;}
+.tc.active{display:block;}
+/* CARDS RESERVA */
+.empty{text-align:center;padding:48px 20px;color:var(--ca2);font-size:14px;}
+.empty span{display:block;font-size:30px;margin-bottom:8px;}
+.rcard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:18px 20px;margin-bottom:10px;}
+.rtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.rinfo h3{font-size:15px;font-weight:500;color:var(--ca);margin-bottom:3px;}
+.rfecha{font-size:14px;font-weight:500;color:var(--v);margin:4px 0;}
+.rcon{font-size:12px;color:var(--ca2);}
+.rcon a{color:var(--v);text-decoration:none;}
+.rts{font-size:11px;color:var(--ca2);margin-top:3px;}
+.badge{border-radius:40px;padding:4px 12px;font-size:12px;font-weight:500;border:1px solid;white-space:nowrap;}
+.bp{background:var(--wb);color:var(--warn);border-color:var(--wbo);}
+.bc{background:var(--ob);color:var(--ok);border-color:var(--obo);}
+.bx{background:#fef0f0;color:#c0392b;border-color:#f5c6c6;}
+.ract{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.bsm{padding:7px 15px;border-radius:40px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid;transition:all .15s;}
+.bcf{background:var(--v);color:white;border-color:var(--v);}
+.bcf:hover{background:var(--vm);}
+.bcx{background:white;color:#c0392b;border-color:#f5c6c6;}
+.bcx:hover{background:#fef0f0;}
+.bem{background:white;color:var(--v);border-color:var(--b2);}
+.bem:hover{border-color:var(--v);}
+/* CONFIG */
+.csec{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:20px;margin-bottom:12px;}
+.csec h3{font-size:14px;font-weight:500;color:var(--v);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--b);}
+.cf{margin-bottom:12px;}
+.cf:last-child{margin-bottom:0;}
+.cf label{display:block;font-size:11px;font-weight:500;color:var(--ca2);margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase;}
+.cf input,.cf select{width:100%;padding:10px 12px;border:1px solid var(--b2);border-radius:var(--r);font-size:14px;font-family:inherit;color:var(--ca);outline:none;transition:border-color .15s;}
+.cf input:focus,.cf select:focus{border-color:var(--v);}
+.tgrid{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
+.tg{padding:7px 12px;border:1px solid var(--b2);border-radius:40px;cursor:pointer;font-size:13px;transition:all .15s;background:white;user-select:none;}
+.tg.on{background:var(--v);color:white;border-color:var(--v);}
+.bsave{padding:10px 24px;border-radius:40px;background:var(--v);color:white;font-size:14px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .15s;}
+.bsave:hover{background:var(--vm);}
+.saveok{font-size:13px;color:var(--ok);margin-left:10px;opacity:0;transition:opacity .3s;}
+.saveok.show{opacity:1;}
+/* BLOQUEOS */
+.blist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.bitem{display:flex;align-items:center;justify-content:space-between;background:var(--wb);border:1px solid var(--wbo);border-radius:var(--r);padding:10px 14px;}
+.binfo{font-size:13px;color:var(--ca);}
+.btipo{font-size:11px;font-weight:500;color:var(--warn);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.bdelbtn{background:none;border:none;color:#c0392b;cursor:pointer;font-size:18px;line-height:1;padding:2px 6px;border-radius:4px;transition:background .15s;}
+.bdelbtn:hover{background:#fef0f0;}
+.addform{background:rgba(15,81,50,.04);border:1px solid var(--b2);border-radius:var(--r2);padding:16px;margin-top:10px;}
+.addform h4{font-size:13px;font-weight:500;color:var(--v);margin-bottom:12px;}
+.ttabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.ttab{padding:6px 13px;border:1px solid var(--b2);border-radius:40px;font-size:12px;cursor:pointer;background:white;font-family:inherit;transition:all .15s;}
+.ttab.on{background:var(--v);color:white;border-color:var(--v);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+@media(max-width:480px){.frow{grid-template-columns:1fr;}}
+.frow3{grid-template-columns:1fr 1fr 1fr;}
+.flbl{font-size:11px;font-weight:500;color:var(--ca2);display:block;margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase;}
+.finput{width:100%;padding:9px 11px;border:1px solid var(--b2);border-radius:var(--r);font-size:14px;font-family:inherit;color:var(--ca);outline:none;transition:border-color .15s;}
+.finput:focus{border-color:var(--v);}
+.badd{padding:8px 18px;border-radius:40px;background:var(--v);color:white;font-size:13px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .15s;}
+.badd:hover{background:var(--vm);}
+/* MODAL */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.mbg.open{display:flex;}
+.modal{background:white;border-radius:var(--r2);padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--v);margin-bottom:10px;}
+.modal p{font-size:14px;color:var(--ca2);line-height:1.65;margin-bottom:10px;}
+.eprev{background:var(--cr);border:1px solid var(--b2);border-radius:var(--r);padding:14px;font-size:12px;color:var(--ca);line-height:1.7;margin:12px 0;white-space:pre-wrap;max-height:220px;overflow-y:auto;}
+.macts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.mbpr{padding:10px 20px;border-radius:40px;background:var(--v);color:white;font-size:14px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .15s;}
+.mbpr:hover{background:var(--vm);}
+.mbsc{padding:10px 20px;border-radius:40px;background:white;color:var(--ca2);font-size:14px;font-weight:500;font-family:inherit;border:1px solid var(--b2);cursor:pointer;transition:all .15s;}
+.mbsc:hover{border-color:var(--ca2);}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-scr">
+  <div class="lcard">
+    <div class="llogo">Silvia Busquets</div>
+    <p class="lsub">Panel de administración</p>
+    <input type="email" id="inp-lemail" placeholder="sabnosti@hotmail.com" onkeydown="if(event.key==='Enter')document.getElementById('inp-lpass').focus()">
+    <input type="password" id="inp-lpass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
+    <button class="lbtn" onclick="login()">Entrar</button>
+    <p class="lerr" id="lerr">Correo o contraseña incorrectos</p>
+    <p class="linfo">Acceso exclusivo para Silvia Busquets.<br>Intentos fallidos quedan bloqueados automáticamente.</p>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div id="panel">
+  <div class="topbar">
+    <span class="tlogo">Panel · Silvia Busquets</span>
+    <div class="tright">
+      <span class="bpend" id="badge-pend" style="display:none;"></span>
+      <button class="logoutbtn" onclick="logout()">Salir</button>
+    </div>
+  </div>
+  <div class="pinner">
+    <div class="ptit">Bienvenida, Silvia</div>
+    <p class="psub">Gestiona tus reservas, bloqueos y configuración.</p>
+    <div class="sgrid" id="sgrid"></div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('pendientes')">Pendientes <span id="cnt-pend"></span></button>
+      <button class="tab" onclick="showTab('confirmadas')">Confirmadas</button>
+      <button class="tab" onclick="showTab('historial')">Historial</button>
+      <button class="tab" onclick="showTab('bloqueos')">Bloqueos y descansos</button>
+      <button class="tab" onclick="showTab('config')">Configuración</button>
+    </div>
+    <div class="tc active" id="tc-pendientes"></div>
+    <div class="tc" id="tc-confirmadas"></div>
+    <div class="tc" id="tc-historial"></div>
+    <div class="tc" id="tc-bloqueos"></div>
+    <div class="tc" id="tc-config"></div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMACIÓN -->
+<div class="mbg" id="m-conf">
+  <div class="modal">
+    <h3>Confirmar sesión</h3>
+    <p>Confirmas la cita de <strong id="mc-nom"></strong>. Se abrirá tu correo con el mensaje listo para enviar.</p>
+    <div class="eprev" id="mc-prev"></div>
+    <div class="macts">
+      <button class="mbpr" onclick="ejecutarConf()">Enviar confirmación →</button>
+      <button class="mbsc" onclick="cerrarM()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CANCELACIÓN -->
+<div class="mbg" id="m-canc">
+  <div class="modal">
+    <h3>Cancelar reserva</h3>
+    <p>¿Confirmas cancelar la reserva de <strong id="mcanc-nom"></strong>? El horario quedará libre y le avisaré por correo.</p>
+    <div class="macts">
+      <button class="mbpr" style="background:#c0392b;" onclick="ejecutarCanc()">Sí, cancelar</button>
+      <button class="mbsc" onclick="cerrarM()">No, regresar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL = 'https://axdwfaetbhizdfjnoeib.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4ZHdmYWV0YmhpemRmam5vZWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5MzE5MDQsImV4cCI6MjA5ODUwNzkwNH0.gvQM_PCIxZMjgYqaaiFMK1PFR21TT7A52nueygIyKeE';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ── AUTH CON SUPABASE ──
+async function login() {
+  const email = document.getElementById('inp-lemail').value.trim();
+  const pass = document.getElementById('inp-lpass').value;
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if(error) {
+    document.getElementById('lerr').style.display = 'block';
+  } else {
+    mostrarPanel();
+  }
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  location.reload();
+}
+
+async function checkSession() {
+  const { data } = await sb.auth.getSession();
+  if(data?.session) mostrarPanel();
+}
+
+function mostrarPanel() {
+  document.getElementById('login-scr').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+  initPanel();
+}
+
+// ── HELPERS ──
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DIASN = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+function isoF(d) { return typeof d === 'string' ? d : d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fLarga(f) {
+  const d = new Date(f + 'T12:00:00');
+  return DIASN[d.getDay()]+', '+d.getDate()+' de '+MESES[d.getMonth()].toLowerCase()+' '+d.getFullYear();
+}
+
+// ── INIT PANEL ──
+let reservas = [], bloqueos = [], cfg = {};
+let reservaActiva = null;
+let tipoBloqueo = 'rango';
+let diasSel = [], horasSel = [];
+
+async function initPanel() {
+  await Promise.all([cargarReservas(), cargarBloqueos(), cargarCfg()]);
+  renderStats();
+  renderPendientes();
+  renderConfirmadas();
+  renderHistorial();
+  renderBloqueos();
+  renderConfig();
+  // Limpiar expiradas
+  await sb.from('reservas').update({estado:'expirada'})
+    .eq('estado','pendiente')
+    .lt('created_at', new Date(Date.now() - 86400000).toISOString());
+}
+
+async function cargarReservas() {
+  const { data } = await sb.from('reservas').select('*').order('fecha').order('hora');
+  reservas = data || [];
+}
+async function cargarBloqueos() {
+  const { data } = await sb.from('bloqueos').select('*').order('created_at', {ascending:false});
+  bloqueos = data || [];
+}
+async function cargarCfg() {
+  const { data } = await sb.from('configuracion').select('*').single();
+  if(data) { cfg = data; diasSel = [...(cfg.dias_disponibles||[])]; horasSel = [...(cfg.horarios_disponibles||[])]; }
+}
+
+function renderStats() {
+  const pend = reservas.filter(r=>r.estado==='pendiente').length;
+  const conf = reservas.filter(r=>r.estado==='confirmada').length;
+  const ing = conf * 500;
+  const bl = bloqueos.filter(b => {
+    const hoy = isoF(new Date());
+    if(b.tipo==='rango') return b.hasta >= hoy;
+    if(b.tipo==='dia') return b.fecha >= hoy;
+    if(b.tipo==='slot') return b.fecha >= hoy;
+    return true;
+  }).length;
+  document.getElementById('sgrid').innerHTML = `
+    <div class="scard"><div class="slbl">Pendientes</div><div class="snum">${pend}</div></div>
+    <div class="scard"><div class="slbl">Confirmadas</div><div class="snum">${conf}</div></div>
+    <div class="scard"><div class="slbl">Ingresos</div><div class="snum" style="font-size:22px;">$${ing.toLocaleString()}</div></div>
+    <div class="scard"><div class="slbl">Bloqueos activos</div><div class="snum">${bl}</div></div>
+  `;
+  const b = document.getElementById('badge-pend');
+  b.style.display = pend > 0 ? '' : 'none';
+  if(pend > 0) b.textContent = pend + ' pendiente' + (pend > 1 ? 's' : '');
+  document.getElementById('cnt-pend').textContent = pend > 0 ? '(' + pend + ')' : '';
+}
+
+function renderPendientes() {
+  const rs = reservas.filter(r=>r.estado==='pendiente');
+  const el = document.getElementById('tc-pendientes');
+  if(!rs.length) { el.innerHTML = '<div class="empty"><span>⏳</span>No hay reservas pendientes.</div>'; return; }
+  el.innerHTML = rs.map(r => `
+    <div class="rcard">
+      <div class="rtop">
+        <div class="rinfo">
+          <h3>${r.nombre}</h3>
+          <div class="rfecha">📅 ${r.fecha_larga} · ${r.hora} hrs</div>
+          <div class="rcon">📧 <a href="mailto:${r.email}">${r.email}</a> &nbsp;·&nbsp; 📞 ${r.tel}</div>
+          <div class="rts">Reservó: ${new Date(r.created_at).toLocaleDateString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <span class="badge bp">Pendiente de pago</span>
+      </div>
+      <div class="ract">
+        <button class="bsm bcf" onclick="abrirConf('${r.id}')">✓ Confirmar pago recibido</button>
+        <button class="bsm bcx" onclick="abrirCanc('${r.id}')">✕ Cancelar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderConfirmadas() {
+  const rs = reservas.filter(r=>r.estado==='confirmada');
+  const el = document.getElementById('tc-confirmadas');
+  if(!rs.length) { el.innerHTML = '<div class="empty"><span>✅</span>No hay sesiones confirmadas aún.</div>'; return; }
+  el.innerHTML = rs.map(r => `
+    <div class="rcard">
+      <div class="rtop">
+        <div class="rinfo">
+          <h3>${r.nombre}</h3>
+          <div class="rfecha">📅 ${r.fecha_larga} · ${r.hora} hrs</div>
+          <div class="rcon">📧 <a href="mailto:${r.email}">${r.email}</a> &nbsp;·&nbsp; 📞 ${r.tel}</div>
+        </div>
+        <span class="badge bc">✓ Confirmada</span>
+      </div>
+      <div class="ract">
+        <button class="bsm bem" onclick="reenviar('${r.id}')">📧 Reenviar guía</button>
+        <button class="bsm bcx" onclick="abrirCanc('${r.id}')">✕ Cancelar sesión</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderHistorial() {
+  const rs = reservas.filter(r=>['cancelada','expirada'].includes(r.estado)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  const el = document.getElementById('tc-historial');
+  if(!rs.length) { el.innerHTML = '<div class="empty"><span>📋</span>El historial está vacío.</div>'; return; }
+  el.innerHTML = rs.map(r => `
+    <div class="rcard" style="opacity:.65;">
+      <div class="rtop">
+        <div class="rinfo">
+          <h3>${r.nombre}</h3>
+          <div class="rfecha">📅 ${r.fecha_larga} · ${r.hora} hrs</div>
+          <div class="rcon">${r.email} · ${r.tel}</div>
+        </div>
+        <span class="badge bx">${r.estado==='expirada'?'No pagó (24h)':'Cancelada'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── EMAIL CONFIRMACIÓN ──
+function emailConf(r) {
+  return `Hola ${r.nombre},\n\n¡Tu sesión de angeloterapia está confirmada! 🌿\n\n📅 Fecha: ${r.fecha_larga}\n🕐 Hora: ${r.hora} hrs\n📞 Silvia te llamará a ${r.tel}\n⏱ Duración: 1 a 2 horas aprox.\n\n─────────────────────\nGUÍA DE PREPARACIÓN\n─────────────────────\n\n✦ Un lugar tranquilo, sin interrupciones\n✦ Teléfono con buena señal y batería cargada\n✦ Un vaso de agua simple a la mano\n✦ Una esencia o aceite aromático que te guste\n✦ Llega receptiva y con mente abierta 🙏\n\nAntes de la sesión envíame:\n→ Tu nombre completo como aparece en tu acta de nacimiento\n→ Tu fecha de nacimiento completa (día, mes y año)\n\n─────────────────────\n\n¿Dudas? Escríbeme: @silvia_busquets_n en Instagram\n\nCon cariño,\nSilvia Busquets · Angeloterapeuta\nsabnosti@hotmail.com`;
+}
+
+function abrirConf(id) {
+  reservaActiva = reservas.find(r=>r.id===id);
+  if(!reservaActiva) return;
+  document.getElementById('mc-nom').textContent = reservaActiva.nombre;
+  document.getElementById('mc-prev').textContent = emailConf(reservaActiva);
+  document.getElementById('m-conf').classList.add('open');
+}
+
+async function ejecutarConf() {
+  const r = reservaActiva; if(!r) return;
+  await sb.from('reservas').update({estado:'confirmada'}).eq('id', r.id);
+  const s = encodeURIComponent('¡Tu sesión de angeloterapia está confirmada! — ' + r.fecha_larga);
+  window.open('mailto:'+r.email+'?subject='+s+'&body='+encodeURIComponent(emailConf(r)), '_blank');
+  cerrarM();
+  await cargarReservas();
+  renderStats(); renderPendientes(); renderConfirmadas();
+  showTab('confirmadas');
+}
+
+function reenviar(id) {
+  const r = reservas.find(x=>x.id===id); if(!r) return;
+  const s = encodeURIComponent('Recordatorio: tu sesión es el '+r.fecha_larga+' · '+r.hora);
+  window.open('mailto:'+r.email+'?subject='+s+'&body='+encodeURIComponent(emailConf(r)), '_blank');
+}
+
+function abrirCanc(id) {
+  reservaActiva = reservas.find(r=>r.id===id);
+  if(!reservaActiva) return;
+  document.getElementById('mcanc-nom').textContent = reservaActiva.nombre;
+  document.getElementById('m-canc').classList.add('open');
+}
+
+async function ejecutarCanc() {
+  const r = reservaActiva; if(!r) return;
+  await sb.from('reservas').update({estado:'cancelada'}).eq('id', r.id);
+  const s = encodeURIComponent('Tu reserva ha sido cancelada — Silvia Busquets');
+  const b = `Hola ${r.nombre},\n\nTu reserva del ${r.fecha_larga} a las ${r.hora} hrs fue cancelada.\n\nSi quieres reagendar, escríbeme por Instagram: @silvia_busquets_n\n\nCon cariño,\nSilvia Busquets`;
+  window.open('mailto:'+r.email+'?subject='+s+'&body='+encodeURIComponent(b), '_blank');
+  cerrarM();
+  await cargarReservas();
+  renderStats(); renderPendientes(); renderConfirmadas(); renderHistorial();
+}
+
+function cerrarM() {
+  document.getElementById('m-conf').classList.remove('open');
+  document.getElementById('m-canc').classList.remove('open');
+}
+
+// ── BLOQUEOS ──
+function renderBloqueos() {
+  const hoy = isoF(new Date());
+  const activos = bloqueos.filter(b => {
+    if(b.tipo==='rango') return b.hasta >= hoy;
+    return (b.fecha || b.hasta || '') >= hoy;
+  });
+  const el = document.getElementById('tc-bloqueos');
+  el.innerHTML = `
+    <div class="csec">
+      <h3>Bloqueos activos</h3>
+      <div class="blist">
+        ${activos.length === 0 ? '<p style="font-size:13px;color:var(--ca2);">No tienes bloqueos activos.</p>' : ''}
+        ${activos.map(b => `
+          <div class="bitem">
+            <div class="binfo">
+              <div class="btipo">${b.tipo==='rango'?'Descanso / vacaciones':b.tipo==='dia'?'Día completo bloqueado':'Horario específico bloqueado'}</div>
+              <div>${textoBloqueo(b)}</div>
+            </div>
+            <button class="bdelbtn" onclick="eliminarBloqueo('${b.id}')">×</button>
+          </div>
+        `).join('')}
+      </div>
+      <div class="addform">
+        <h4>Agregar bloqueo</h4>
+        <div class="ttabs">
+          <button class="ttab on" onclick="setTipoB('rango',this)">Rango (vacaciones / break)</button>
+          <button class="ttab" onclick="setTipoB('dia',this)">Día completo</button>
+          <button class="ttab" onclick="setTipoB('slot',this)">Horario específico</button>
+        </div>
+        <div id="bform-rango">
+          <div class="frow">
+            <div><label class="flbl">Desde</label><input type="date" class="finput" id="bl-desde" min="${hoy}"></div>
+            <div><label class="flbl">Hasta</label><input type="date" class="finput" id="bl-hasta" min="${hoy}"></div>
+          </div>
+          <div style="margin-bottom:10px;"><label class="flbl">Motivo (solo tú lo ves)</label><input type="text" class="finput" id="bl-mr" placeholder="vacaciones, congreso, descanso..."></div>
+        </div>
+        <div id="bform-dia" style="display:none;">
+          <div class="frow">
+            <div><label class="flbl">Fecha</label><input type="date" class="finput" id="bl-dia" min="${hoy}"></div>
+            <div><label class="flbl">Motivo (opcional)</label><input type="text" class="finput" id="bl-md" placeholder="evento familiar..."></div>
+          </div>
+        </div>
+        <div id="bform-slot" style="display:none;">
+          <div class="frow">
+            <div><label class="flbl">Fecha</label><input type="date" class="finput" id="bl-sf" min="${hoy}"></div>
+            <div><label class="flbl">Hora</label>
+              <select class="finput" id="bl-sh">
+                ${['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(h=>`<option>${h}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;"><label class="flbl">Motivo (opcional)</label><input type="text" class="finput" id="bl-ms" placeholder="cita médica..."></div>
+        </div>
+        <button class="badd" onclick="agregarBloqueo()">+ Agregar bloqueo</button>
+      </div>
+    </div>
+    ${bloqueos.filter(b=>{const h=isoF(new Date());return(b.fecha||b.hasta||'')<h&&(b.tipo!=='rango'||(b.hasta&&b.hasta<h));}).length>0?`
+    <div class="csec" style="opacity:.6;">
+      <h3>Bloqueos pasados</h3>
+      ${bloqueos.filter(b=>{const h=isoF(new Date());return(b.fecha||b.hasta||'')<h&&(b.tipo!=='rango'||(b.hasta&&b.hasta<h));}).slice(0,5).map(b=>`
+        <div style="font-size:13px;color:var(--ca2);padding:6px 0;border-bottom:1px solid var(--b);">${textoBloqueo(b)}</div>
+      `).join('')}
+    </div>`:''}
+  `;
+}
+
+function textoBloqueo(b) {
+  if(b.tipo==='rango') return `Del ${fLarga(b.desde)} al ${fLarga(b.hasta)}${b.motivo?' — '+b.motivo:''}`;
+  if(b.tipo==='dia') return `${fLarga(b.fecha)} (todo el día)${b.motivo?' — '+b.motivo:''}`;
+  if(b.tipo==='slot') return `${fLarga(b.fecha)} a las ${b.hora} hrs${b.motivo?' — '+b.motivo:''}`;
+  return '';
+}
+
+function setTipoB(t, el) {
+  tipoBloqueo = t;
+  document.querySelectorAll('.ttab').forEach(x=>x.classList.remove('on')); el.classList.add('on');
+  document.getElementById('bform-rango').style.display = t==='rango'?'block':'none';
+  document.getElementById('bform-dia').style.display = t==='dia'?'block':'none';
+  document.getElementById('bform-slot').style.display = t==='slot'?'block':'none';
+}
+
+async function agregarBloqueo() {
+  let data = { tipo: tipoBloqueo, id: 'B' + Date.now() };
+  if(tipoBloqueo==='rango') {
+    const desde = document.getElementById('bl-desde').value;
+    const hasta = document.getElementById('bl-hasta').value;
+    if(!desde||!hasta||hasta<desde) { alert('Selecciona un rango válido.'); return; }
+    data = {...data, desde, hasta, motivo: document.getElementById('bl-mr').value.trim()};
+  } else if(tipoBloqueo==='dia') {
+    const fecha = document.getElementById('bl-dia').value;
+    if(!fecha) { alert('Selecciona una fecha.'); return; }
+    data = {...data, fecha, motivo: document.getElementById('bl-md').value.trim()};
+  } else {
+    const fecha = document.getElementById('bl-sf').value;
+    if(!fecha) { alert('Selecciona una fecha.'); return; }
+    data = {...data, fecha, hora: document.getElementById('bl-sh').value, motivo: document.getElementById('bl-ms').value.trim()};
+  }
+  await sb.from('bloqueos').insert([data]);
+  await cargarBloqueos();
+  renderBloqueos(); renderStats();
+}
+
+async function eliminarBloqueo(id) {
+  if(!confirm('¿Eliminar este bloqueo?')) return;
+  await sb.from('bloqueos').delete().eq('id', id);
+  await cargarBloqueos();
+  renderBloqueos(); renderStats();
+}
+
+// ── CONFIG ──
+const TODOSH = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+
+function renderConfig() {
+  document.getElementById('tc-config').innerHTML = `
+    <div class="csec">
+      <h3>Datos de pago</h3>
+      <div class="cf"><label>CLABE interbancaria</label><input type="text" id="cfg-clabe" value="${cfg.clabe||''}"></div>
+      <div class="cf"><label>Banco</label><input type="text" id="cfg-banco" value="${cfg.banco||'BBVA'}"></div>
+      <div class="cf"><label>Nombre del titular</label><input type="text" id="cfg-titular" value="${cfg.titular||''}"></div>
+    </div>
+    <div class="csec">
+      <h3>Disponibilidad regular</h3>
+      <div class="cf">
+        <label>Días disponibles</label>
+        <div class="tgrid">
+          ${[0,1,2,3,4,5,6].map(d=>`<div class="tg${diasSel.includes(d)?' on':''}" onclick="toggleD(${d},this)">${DIASN[d]}</div>`).join('')}
+        </div>
+      </div>
+      <div class="cf">
+        <label>Horarios disponibles</label>
+        <div class="tgrid">
+          ${TODOSH.map(h=>`<div class="tg${horasSel.includes(h)?' on':''}" onclick="toggleH('${h}',this)">${h}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="csec">
+      <h3>Reglas de agendado</h3>
+      <div class="cf">
+        <label>Días mínimos de anticipación</label>
+        <select id="cfg-ant">
+          ${[1,2,3,4,5,7].map(n=>`<option value="${n}"${cfg.anticipacion_dias===n?' selected':''}>${n} día${n>1?'s':''}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cf">
+        <label>Máximo días hacia el futuro para agendar</label>
+        <select id="cfg-max">
+          ${[7,10,14,21,30].map(n=>`<option value="${n}"${cfg.max_dias_adelante===n?' selected':''}>Hasta ${n} días adelante</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="csec">
+      <h3>Notificaciones</h3>
+      <div class="cf"><label>Tu correo para recibir avisos de reservas</label><input type="email" id="cfg-email" value="${cfg.email_silvia||''}"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+      <button class="bsave" onclick="guardarCfg()">Guardar cambios</button>
+      <span class="saveok" id="saveok">✓ Guardado</span>
+    </div>
+  `;
+}
+
+function toggleD(d, el) {
+  if(diasSel.includes(d)) { diasSel=diasSel.filter(x=>x!==d); el.classList.remove('on'); }
+  else { diasSel.push(d); el.classList.add('on'); }
+}
+function toggleH(h, el) {
+  if(horasSel.includes(h)) { horasSel=horasSel.filter(x=>x!==h); el.classList.remove('on'); }
+  else { horasSel.push(h); el.classList.add('on'); }
+}
+
+async function guardarCfg() {
+  const data = {
+    clabe: document.getElementById('cfg-clabe').value.trim(),
+    banco: document.getElementById('cfg-banco').value.trim(),
+    titular: document.getElementById('cfg-titular').value.trim(),
+    email_silvia: document.getElementById('cfg-email').value.trim(),
+    dias_disponibles: [...diasSel].sort((a,b)=>a-b),
+    horarios_disponibles: [...horasSel].sort(),
+    anticipacion_dias: parseInt(document.getElementById('cfg-ant').value),
+    max_dias_adelante: parseInt(document.getElementById('cfg-max').value)
+  };
+  await sb.from('configuracion').update(data).eq('id', 1);
+  cfg = {...cfg, ...data};
+  const ok = document.getElementById('saveok'); ok.classList.add('show'); setTimeout(()=>ok.classList.remove('show'), 2000);
+}
+
+// ── TABS ──
+const TIDS = ['pendientes','confirmadas','historial','bloqueos','config'];
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', TIDS[i]===id));
+  document.querySelectorAll('.tc').forEach((c,i)=>c.classList.toggle('active', TIDS[i]===id));
+}
+
+// ── INICIO ──
+checkSession();
+</script>
+</body>
+</html>
