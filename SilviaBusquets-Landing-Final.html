@@ -310,7 +310,12 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
     <div class="prog"><div class="pd done"></div><div class="pd act"></div><div class="pd"></div></div>
     <div class="h-grid" id="h-grid"></div>
     <div style="margin-top:20px;">
-      <div class="field"><label>Nombre completo</label><input type="text" id="inp-nom" placeholder="Como aparece en tu identificación" oninput="validarAg2()"></div>
+      <div class="field"><label>Nombre completo</label><input type="text" id="inp-nom" placeholder="Como aparece en tu acta de nacimiento" oninput="validarAg2()">
+        <p style="font-size:11px;color:var(--ca2);margin-top:4px;line-height:1.5;">⚠️ Necesitamos tu nombre <strong>exactamente como aparece en tu acta de nacimiento</strong> — es indispensable para que la sesión de angeloterapia funcione correctamente.</p>
+      </div>
+      <div class="field"><label>Fecha de nacimiento</label><input type="date" id="inp-fnac" oninput="validarAg2()">
+        <p style="font-size:11px;color:var(--ca2);margin-top:4px;line-height:1.5;">⚠️ Tu fecha de nacimiento exacta es necesaria para la sesión — día, mes y año.</p>
+      </div>
       <div class="field"><label>Correo electrónico</label><input type="email" id="inp-email" placeholder="Te mandaremos la confirmación aquí" oninput="validarAg2()"></div>
       <div class="field"><label>Teléfono (al que te llamará Silvia)</label><input type="tel" id="inp-tel" placeholder="10 dígitos" oninput="validarAg2()"></div>
     </div>
@@ -555,7 +560,9 @@ function agPaso(n) {
 }
 
 function validarAg2() {
-  const ok = horaSel && document.getElementById('inp-nom').value.trim().length > 2 &&
+  const ok = horaSel &&
+    document.getElementById('inp-nom').value.trim().length > 2 &&
+    document.getElementById('inp-fnac').value.trim().length > 0 &&
     document.getElementById('inp-email').value.includes('@') &&
     document.getElementById('inp-tel').value.trim().length >= 10;
   document.getElementById('btn-ag3').disabled = !ok;
@@ -568,10 +575,12 @@ async function confirmarReserva() {
   const nombre = document.getElementById('inp-nom').value;
   const email = document.getElementById('inp-email').value;
   const tel = document.getElementById('inp-tel').value;
+  const fnac = document.getElementById('inp-fnac').value;
   const fs = isoF(fechaSel);
   const reserva = {
     id: 'R' + Date.now(),
     nombre, email, tel,
+    fecha_nacimiento: fnac,
     fecha: fs,
     fecha_larga: fechaLarga(fechaSel),
     hora: horaSel,
@@ -580,10 +589,8 @@ async function confirmarReserva() {
   try {
     const { error } = await sb.from('reservas').insert([reserva]);
     if(error) throw error;
-    // Notificar a Silvia por mailto
-    const s = encodeURIComponent('Nueva reserva: ' + nombre + ' — ' + reserva.fecha_larga + ' ' + horaSel);
-    const b = encodeURIComponent('¡Tienes una nueva reserva!\n\nNombre: '+nombre+'\nEmail: '+email+'\nTeléfono: '+tel+'\nFecha: '+reserva.fecha_larga+'\nHora: '+horaSel+' hrs\n\nVerifica la transferencia de $500 MXN en tu banco y confirma desde tu panel.');
-    setTimeout(() => window.open('mailto:sabnosti@hotmail.com?subject='+s+'&body='+b, '_blank'), 400);
+    // Resend manda el correo automáticamente via trigger de Supabase
+    // No necesitamos abrir Outlook
     // Paso 4
     document.getElementById('email-pend').textContent = email;
     document.getElementById('pend-fecha').textContent = reserva.fecha_larga;
