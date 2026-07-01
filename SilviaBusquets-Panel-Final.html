@@ -169,11 +169,11 @@ body{font-family:'Inter',sans-serif;background:#f5f4f0;color:var(--ca);min-heigh
 <!-- MODAL CONFIRMACIÓN -->
 <div class="mbg" id="m-conf">
   <div class="modal">
-    <h3>Confirmar sesión</h3>
-    <p>Confirmas la cita de <strong id="mc-nom"></strong>. Se abrirá tu correo con el mensaje listo para enviar.</p>
-    <div class="eprev" id="mc-prev"></div>
+    <h3>Confirmar pago recibido</h3>
+    <p>¿Confirmas que recibiste la transferencia de <strong>$500 MXN</strong> de <strong id="mc-nom"></strong>?</p>
+    <p style="font-size:13px;color:var(--ca2);">Al confirmar, se enviará automáticamente el correo de preparación a la clienta.</p>
     <div class="macts">
-      <button class="mbpr" onclick="ejecutarConf()">Enviar confirmación →</button>
+      <button class="mbpr" onclick="ejecutarConf()">✓ Sí, confirmar sesión</button>
       <button class="mbsc" onclick="cerrarM()">Cancelar</button>
     </div>
   </div>
@@ -374,15 +374,15 @@ function abrirConf(id) {
   reservaActiva = reservas.find(r=>r.id===id);
   if(!reservaActiva) return;
   document.getElementById('mc-nom').textContent = reservaActiva.nombre;
-  document.getElementById('mc-prev').textContent = emailConf(reservaActiva);
   document.getElementById('m-conf').classList.add('open');
 }
 
 async function ejecutarConf() {
   const r = reservaActiva; if(!r) return;
+  const btn = document.querySelector('#m-conf .mbpr');
+  btn.disabled = true; btn.textContent = 'Confirmando...';
   await sb.from('reservas').update({estado:'confirmada'}).eq('id', r.id);
-  const s = encodeURIComponent('¡Tu sesión de angeloterapia está confirmada! — ' + r.fecha_larga);
-  window.open('mailto:'+r.email+'?subject='+s+'&body='+encodeURIComponent(emailConf(r)), '_blank');
+  // El trigger de Supabase manda el correo automáticamente vía Resend
   cerrarM();
   await cargarReservas();
   renderStats(); renderPendientes(); renderConfirmadas();
@@ -391,8 +391,9 @@ async function ejecutarConf() {
 
 function reenviar(id) {
   const r = reservas.find(x=>x.id===id); if(!r) return;
-  const s = encodeURIComponent('Recordatorio: tu sesión es el '+r.fecha_larga+' · '+r.hora);
-  window.open('mailto:'+r.email+'?subject='+s+'&body='+encodeURIComponent(emailConf(r)), '_blank');
+  sb.rpc('enviar_confirmacion', { reserva_id: r.id })
+    .then(() => alert('Correo reenviado a ' + r.email))
+    .catch(() => alert('Hubo un error al reenviar. Intenta de nuevo.'));
 }
 
 function abrirCanc(id) {
@@ -405,9 +406,7 @@ function abrirCanc(id) {
 async function ejecutarCanc() {
   const r = reservaActiva; if(!r) return;
   await sb.from('reservas').update({estado:'cancelada'}).eq('id', r.id);
-  const s = encodeURIComponent('Tu reserva ha sido cancelada — Silvia Busquets');
-  const b = `Hola ${r.nombre},\n\nTu reserva del ${r.fecha_larga} a las ${r.hora} hrs fue cancelada.\n\nSi quieres reagendar, escríbeme por Instagram: @silvia_busquets_n\n\nCon cariño,\nSilvia Busquets`;
-  window.open('mailto:'+r.email+'?subject='+s+'&body='+encodeURIComponent(b), '_blank');
+  // El trigger de Supabase manda el correo de cancelación automáticamente
   cerrarM();
   await cargarReservas();
   renderStats(); renderPendientes(); renderConfirmadas(); renderHistorial();
