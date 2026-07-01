@@ -237,7 +237,10 @@ function fLarga(f) {
 let reservas = [], bloqueos = [], cfg = {};
 let reservaActiva = null;
 let tipoBloqueo = 'rango';
-let diasSel = [], horasSel = [];
+// horariosPorDia: {0:[...], 1:[...], ...} — horarios independientes por día
+let diasSel = [];
+let horariosPorDia = {}; // estructura nueva
+const DIASN_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
 async function initPanel() {
   await Promise.all([cargarReservas(), cargarBloqueos(), cargarCfg()]);
@@ -263,7 +266,17 @@ async function cargarBloqueos() {
 }
 async function cargarCfg() {
   const { data } = await sb.from('configuracion').select('*').single();
-  if(data) { cfg = data; diasSel = [...(cfg.dias_disponibles||[])]; horasSel = [...(cfg.horarios_disponibles||[])]; }
+  if(data) {
+    cfg = data;
+    diasSel = [...(cfg.dias_disponibles||[1,2,3,4,5,6])];
+    if(cfg.horarios_por_dia) {
+      horariosPorDia = cfg.horarios_por_dia;
+    } else {
+      const hViejo = cfg.horarios_disponibles || ['09:00','11:00','13:00','15:00','17:00','19:00'];
+      horariosPorDia = {};
+      [0,1,2,3,4,5,6].forEach(d => { horariosPorDia[d] = [...hViejo]; });
+    }
+  }
 }
 
 function renderStats() {
@@ -516,8 +529,6 @@ async function eliminarBloqueo(id) {
 }
 
 // ── CONFIG ──
-const TODOSH = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
-
 function renderConfig() {
   document.getElementById('tc-config').innerHTML = `
     <div class="csec">
@@ -526,21 +537,18 @@ function renderConfig() {
       <div class="cf"><label>Banco</label><input type="text" id="cfg-banco" value="${cfg.banco||'BBVA'}"></div>
       <div class="cf"><label>Nombre del titular</label><input type="text" id="cfg-titular" value="${cfg.titular||''}"></div>
     </div>
+
     <div class="csec">
-      <h3>Disponibilidad regular</h3>
-      <div class="cf">
-        <label>Días disponibles</label>
-        <div class="tgrid">
-          ${[0,1,2,3,4,5,6].map(d=>`<div class="tg${diasSel.includes(d)?' on':''}" onclick="toggleD(${d},this)">${DIASN[d]}</div>`).join('')}
-        </div>
-      </div>
-      <div class="cf">
-        <label>Horarios disponibles</label>
-        <div class="tgrid">
-          ${TODOSH.map(h=>`<div class="tg${horasSel.includes(h)?' on':''}" onclick="toggleH('${h}',this)">${h}</div>`).join('')}
-        </div>
+      <h3>Horarios por día</h3>
+      <p style="font-size:13px;color:var(--ca2);margin-bottom:16px;line-height:1.6;">
+        Activa los días que trabajas y define los horarios de cada uno por separado.
+        Puedes escribir cualquier hora en formato HH:MM y presionar Enter o el botón + para agregarla.
+      </p>
+      <div id="dias-config">
+        ${[0,1,2,3,4,5,6].map(d => renderDiaConfig(d)).join('')}
       </div>
     </div>
+
     <div class="csec">
       <h3>Reglas de agendado</h3>
       <div class="cf">
@@ -556,10 +564,12 @@ function renderConfig() {
         </select>
       </div>
     </div>
+
     <div class="csec">
       <h3>Notificaciones</h3>
-      <div class="cf"><label>Tu correo para recibir avisos de reservas</label><input type="email" id="cfg-email" value="${cfg.email_silvia||''}"></div>
+      <div class="cf"><label>Tu correo para recibir avisos</label><input type="email" id="cfg-email" value="${cfg.email_silvia||''}"></div>
     </div>
+
     <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
       <button class="bsave" onclick="guardarCfg()">Guardar cambios</button>
       <span class="saveok" id="saveok">✓ Guardado</span>
@@ -567,23 +577,91 @@ function renderConfig() {
   `;
 }
 
-function toggleD(d, el) {
-  if(diasSel.includes(d)) { diasSel=diasSel.filter(x=>x!==d); el.classList.remove('on'); }
-  else { diasSel.push(d); el.classList.add('on'); }
+function renderDiaConfig(d) {
+  const activo = diasSel.includes(d);
+  const horas = horariosPorDia[d] || [];
+  return `
+    <div class="dia-row" id="dia-row-${d}" style="border:1px solid var(--b);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px;background:${activo?'white':'rgba(0,0,0,0.02)'};">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${activo?'12px':'0'};">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="tg${activo?' on':''}" onclick="toggleDia(${d})" style="cursor:pointer;min-width:36px;text-align:center;">${activo?'✓':'○'}</div>
+          <span style="font-size:14px;font-weight:${activo?'500':'400'};color:${activo?'var(--ca)':'var(--ca2)'};">${DIASN_FULL[d]}</span>
+        </div>
+        ${activo?`<span style="font-size:12px;color:var(--ca2);">${horas.length} horario${horas.length!==1?'s':''}</span>`:'<span style="font-size:12px;color:var(--ca2);">Inactivo</span>'}
+      </div>
+      ${activo?`
+        <div id="horas-dia-${d}" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          ${horas.sort().map(h=>`
+            <div style="display:flex;align-items:center;gap:4px;background:var(--ob);border:1px solid var(--obo);border-radius:40px;padding:4px 10px;">
+              <span style="font-size:13px;color:var(--ok);font-family:monospace;">${h}</span>
+              <button onclick="quitarHora(${d},'${h}')" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:14px;line-height:1;padding:0 2px;opacity:.7;" title="Quitar">×</button>
+            </div>
+          `).join('')}
+          ${horas.length===0?'<span style="font-size:13px;color:var(--ca2);font-style:italic;">Sin horarios — agrega al menos uno</span>':''}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="time" id="inp-hora-${d}" style="padding:7px 10px;border:1px solid var(--b2);border-radius:var(--r);font-size:14px;font-family:inherit;outline:none;" onkeydown="if(event.key==='Enter')agregarHora(${d})">
+          <button onclick="agregarHora(${d})" class="badd">+ Agregar</button>
+        </div>
+      `:''}
+    </div>
+  `;
 }
-function toggleH(h, el) {
-  if(horasSel.includes(h)) { horasSel=horasSel.filter(x=>x!==h); el.classList.remove('on'); }
-  else { horasSel.push(h); el.classList.add('on'); }
+
+function toggleDia(d) {
+  if(diasSel.includes(d)) {
+    diasSel = diasSel.filter(x => x !== d);
+  } else {
+    diasSel.push(d);
+    if(!horariosPorDia[d]) horariosPorDia[d] = [];
+  }
+  // Re-renderizar solo la sección de días
+  document.getElementById('dias-config').innerHTML = [0,1,2,3,4,5,6].map(x => renderDiaConfig(x)).join('');
+}
+
+function agregarHora(d) {
+  const inp = document.getElementById('inp-hora-' + d);
+  const val = inp.value.trim();
+  if(!val) return;
+  // Normalizar a HH:MM
+  const h = val.length === 5 ? val : val.substring(0,5);
+  if(!horariosPorDia[d]) horariosPorDia[d] = [];
+  if(!horariosPorDia[d].includes(h)) {
+    horariosPorDia[d].push(h);
+    horariosPorDia[d].sort();
+  }
+  inp.value = '';
+  document.getElementById('horas-dia-' + d).innerHTML = horariosPorDia[d].sort().map(ho=>`
+    <div style="display:flex;align-items:center;gap:4px;background:var(--ob);border:1px solid var(--obo);border-radius:40px;padding:4px 10px;">
+      <span style="font-size:13px;color:var(--ok);font-family:monospace;">${ho}</span>
+      <button onclick="quitarHora(${d},'${ho}')" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:14px;line-height:1;padding:0 2px;opacity:.7;">×</button>
+    </div>
+  `).join('') + (horariosPorDia[d].length===0?'<span style="font-size:13px;color:var(--ca2);font-style:italic;">Sin horarios</span>':'');
+  // Actualizar contador
+  document.getElementById('dia-row-' + d).querySelector('span:last-of-type') && document.getElementById('dias-config').children[d].querySelector('.tg').nextElementSibling.nextElementSibling && null;
+}
+
+function quitarHora(d, h) {
+  horariosPorDia[d] = (horariosPorDia[d] || []).filter(x => x !== h);
+  document.getElementById('horas-dia-' + d).innerHTML = horariosPorDia[d].sort().map(ho=>`
+    <div style="display:flex;align-items:center;gap:4px;background:var(--ob);border:1px solid var(--obo);border-radius:40px;padding:4px 10px;">
+      <span style="font-size:13px;color:var(--ok);font-family:monospace;">${ho}</span>
+      <button onclick="quitarHora(${d},'${ho}')" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:14px;line-height:1;padding:0 2px;opacity:.7;">×</button>
+    </div>
+  `).join('') + (horariosPorDia[d].length===0?'<span style="font-size:13px;color:var(--ca2);font-style:italic;">Sin horarios — agrega al menos uno</span>':'');
 }
 
 async function guardarCfg() {
+  // Calcular lista plana de horarios (unión de todos los días) para compatibilidad con landing
+  const todosHorarios = [...new Set(Object.values(horariosPorDia).flat())].sort();
   const data = {
     clabe: document.getElementById('cfg-clabe').value.trim(),
     banco: document.getElementById('cfg-banco').value.trim(),
     titular: document.getElementById('cfg-titular').value.trim(),
     email_silvia: document.getElementById('cfg-email').value.trim(),
     dias_disponibles: [...diasSel].sort((a,b)=>a-b),
-    horarios_disponibles: [...horasSel].sort(),
+    horarios_disponibles: todosHorarios,
+    horarios_por_dia: horariosPorDia,
     anticipacion_dias: parseInt(document.getElementById('cfg-ant').value),
     max_dias_adelante: parseInt(document.getElementById('cfg-max').value)
   };
