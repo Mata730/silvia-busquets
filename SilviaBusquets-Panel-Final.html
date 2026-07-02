@@ -274,6 +274,8 @@ let horariosPorDia = {}; // estructura nueva
 const DIASN_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
 async function initPanel() {
+  // Limpiar expiradas en Supabase (el cron lo hace automático, esto es por si acaso)
+  await sb.rpc('limpiar_expiradas_manual');
   await Promise.all([cargarReservas(), cargarBloqueos(), cargarCfg()]);
   renderStats();
   renderPendientes();
