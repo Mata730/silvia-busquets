@@ -107,7 +107,36 @@ body{font-family:'Inter',sans-serif;background:#f5f4f0;color:var(--ca);min-heigh
 .finput:focus{border-color:var(--v);}
 .badd{padding:8px 18px;border-radius:40px;background:var(--v);color:white;font-size:13px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .15s;}
 .badd:hover{background:var(--vm);}
-/* MODAL */
+/* CALENDARIO PANEL */
+.pcal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.pcal-mes{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--v);}
+.pcal-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--b2);background:white;cursor:pointer;font-size:16px;color:var(--v);display:flex;align-items:center;justify-content:center;transition:background .15s;font-family:inherit;}
+.pcal-btn:hover{background:var(--v);color:white;}
+.pcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:24px;}
+.pcal-dl{text-align:center;font-size:11px;font-weight:500;color:var(--ca2);padding:6px 0;letter-spacing:.5px;}
+.pcal-day{min-height:72px;border-radius:var(--r);padding:6px;background:white;border:1px solid var(--b);position:relative;vertical-align:top;}
+.pcal-day.hoy{border-color:var(--v);border-width:2px;}
+.pcal-day.otro-mes{background:rgba(0,0,0,.02);border-color:transparent;}
+.pcal-day.bloqueado{background:rgba(193,127,10,.06);border-color:rgba(193,127,10,.2);}
+.pcal-num{font-size:12px;font-weight:500;color:var(--ca2);margin-bottom:4px;}
+.pcal-day.hoy .pcal-num{color:var(--v);font-weight:700;}
+.pcal-evento{font-size:11px;border-radius:4px;padding:2px 5px;margin-bottom:2px;line-height:1.3;cursor:pointer;transition:opacity .15s;}
+.pcal-evento:hover{opacity:.8;}
+.ev-conf{background:#edf7f1;color:#0F5132;border:1px solid #a8dbb8;}
+.ev-pend{background:#fef9ec;color:#c17f0a;border:1px solid #f0d070;}
+.ev-blk{background:rgba(193,127,10,.08);color:#c17f0a;font-style:italic;}
+.pcal-leyenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;}
+.pcal-leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ca2);}
+.pcal-leg-dot{width:10px;height:10px;border-radius:3px;}
+/* DETALLE DÍA */
+.dia-detalle{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:20px;margin-top:16px;}
+.dia-detalle h3{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--v);margin-bottom:14px;}
+.dia-sesion{padding:12px;border-radius:var(--r);margin-bottom:8px;border:1px solid;}
+.dia-sesion.conf{background:#edf7f1;border-color:#a8dbb8;}
+.dia-sesion.pend{background:#fef9ec;border-color:#f0d070;}
+.dia-sesion h4{font-size:14px;font-weight:500;color:var(--ca);margin-bottom:2px;}
+.dia-sesion p{font-size:12px;color:var(--ca2);}
+.dia-bloqueo{padding:10px;border-radius:var(--r);background:rgba(193,127,10,.06);border:1px solid rgba(193,127,10,.2);margin-bottom:8px;font-size:13px;color:#c17f0a;}
 .mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .mbg.open{display:flex;}
 .modal{background:white;border-radius:var(--r2);padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
@@ -154,12 +183,14 @@ body{font-family:'Inter',sans-serif;background:#f5f4f0;color:var(--ca);min-heigh
     <div class="tabs">
       <button class="tab active" onclick="showTab('pendientes')">Pendientes <span id="cnt-pend"></span></button>
       <button class="tab" onclick="showTab('confirmadas')">Confirmadas</button>
+      <button class="tab" onclick="showTab('calendario')">Calendario</button>
       <button class="tab" onclick="showTab('historial')">Historial</button>
       <button class="tab" onclick="showTab('bloqueos')">Bloqueos y descansos</button>
       <button class="tab" onclick="showTab('config')">Configuración</button>
     </div>
     <div class="tc active" id="tc-pendientes"></div>
     <div class="tc" id="tc-confirmadas"></div>
+    <div class="tc" id="tc-calendario"></div>
     <div class="tc" id="tc-historial"></div>
     <div class="tc" id="tc-bloqueos"></div>
     <div class="tc" id="tc-config"></div>
@@ -313,6 +344,7 @@ function renderPendientes() {
           <h3>${r.nombre}</h3>
           <div class="rfecha">📅 ${r.fecha_larga} · ${r.hora} hrs</div>
           <div class="rcon">📧 <a href="mailto:${r.email}">${r.email}</a> &nbsp;·&nbsp; 📞 ${r.tel}</div>
+          ${r.concepto_pago ? `<div style="margin-top:6px;background:#fff8ec;border:1px solid #f0d070;border-radius:6px;padding:5px 10px;font-size:12px;color:#c17f0a;">Concepto esperado: <strong style="font-family:monospace;letter-spacing:1px;">${r.concepto_pago}</strong></div>` : ''}
           <div class="rts">Reservó: ${new Date(r.created_at).toLocaleDateString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
         </div>
         <span class="badge bp">Pendiente de pago</span>
@@ -669,11 +701,145 @@ async function guardarCfg() {
   const ok = document.getElementById('saveok'); ok.classList.add('show'); setTimeout(()=>ok.classList.remove('show'), 2000);
 }
 
-// ── TABS ──
-const TIDS = ['pendientes','confirmadas','historial','bloqueos','config'];
+// ── CALENDARIO PANEL ──
+let calMes = new Date(); calMes.setDate(1);
+let diaSeleccionado = null;
+
+function renderCalendario() {
+  const el = document.getElementById('tc-calendario');
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const MESES_C = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DIAS_C = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+  const pri = new Date(calMes.getFullYear(), calMes.getMonth(), 1);
+  const ult = new Date(calMes.getFullYear(), calMes.getMonth()+1, 0);
+
+  // Mapear reservas por fecha
+  const resByFecha = {};
+  reservas.forEach(r => {
+    if(!resByFecha[r.fecha]) resByFecha[r.fecha] = [];
+    resByFecha[r.fecha].push(r);
+  });
+
+  // Mapear bloqueos
+  function esBloqueado(fs) {
+    return bloqueos.some(b => {
+      if(b.tipo==='rango') return fs>=b.desde && fs<=b.hasta;
+      if(b.tipo==='dia') return b.fecha===fs;
+      return false;
+    });
+  }
+  function bloqueosDia(fs) {
+    return bloqueos.filter(b => {
+      if(b.tipo==='rango') return fs>=b.desde && fs<=b.hasta;
+      if(b.tipo==='dia') return b.fecha===fs;
+      if(b.tipo==='slot') return b.fecha===fs;
+      return false;
+    });
+  }
+
+  // Generar días
+  let diasHTML = DIAS_C.map(d=>`<div class="pcal-dl">${d}</div>`).join('');
+
+  // Espacios vacíos al inicio
+  for(let i=0; i<pri.getDay(); i++) {
+    diasHTML += `<div class="pcal-day otro-mes"></div>`;
+  }
+
+  for(let d=1; d<=ult.getDate(); d++) {
+    const fecha = new Date(calMes.getFullYear(), calMes.getMonth(), d);
+    const fs = isoF(fecha);
+    const esHoy = fecha.getTime()===hoy.getTime();
+    const blk = esBloqueado(fs);
+    const sesiones = (resByFecha[fs]||[]).filter(r=>['pendiente','confirmada'].includes(r.estado));
+    const bDia = bloqueosDia(fs);
+
+    let cls = 'pcal-day';
+    if(esHoy) cls += ' hoy';
+    if(blk) cls += ' bloqueado';
+
+    let eventosHTML = '';
+    sesiones.forEach(r => {
+      const cls2 = r.estado==='confirmada'?'ev-conf':'ev-pend';
+      eventosHTML += `<div class="pcal-evento ${cls2}" onclick="verDia('${fs}')" title="${r.nombre} · ${r.hora}">${r.hora} ${r.nombre.split(' ')[0]}</div>`;
+    });
+    bDia.filter(b=>b.tipo==='slot').forEach(b => {
+      eventosHTML += `<div class="pcal-evento ev-blk">${b.hora} bloqueado</div>`;
+    });
+    if(blk && bDia.some(b=>b.tipo!=='slot')) {
+      eventosHTML = `<div class="pcal-evento ev-blk">Sin sesiones</div>` + eventosHTML;
+    }
+
+    diasHTML += `
+      <div class="${cls}" onclick="verDia('${fs}')" style="cursor:pointer;">
+        <div class="pcal-num">${d}</div>
+        ${eventosHTML}
+      </div>`;
+  }
+
+  // Detalle del día seleccionado
+  let detalleHTML = '';
+  if(diaSeleccionado) {
+    const sesionesD = (resByFecha[diaSeleccionado]||[]).filter(r=>['pendiente','confirmada'].includes(r.estado));
+    const bloqueosD = bloqueosDia(diaSeleccionado);
+    const fechaD = new Date(diaSeleccionado+'T12:00:00');
+    const fLargaD = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][fechaD.getDay()]+', '+fechaD.getDate()+' de '+MESES_C[fechaD.getMonth()].toLowerCase()+' '+fechaD.getFullYear();
+
+    detalleHTML = `
+      <div class="dia-detalle">
+        <h3>${fLargaD}</h3>
+        ${sesionesD.length===0 && bloqueosD.filter(b=>b.tipo!=='slot').length===0 ? '<p style="font-size:13px;color:var(--ca2);">Sin sesiones agendadas.</p>' : ''}
+        ${bloqueosD.filter(b=>b.tipo==='rango'||b.tipo==='dia').map(b=>`<div class="dia-bloqueo">🚫 Día bloqueado${b.motivo?' — '+b.motivo:''}</div>`).join('')}
+        ${sesionesD.sort((a,b)=>a.hora.localeCompare(b.hora)).map(r=>`
+          <div class="dia-sesion ${r.estado==='confirmada'?'conf':'pend'}">
+            <h4>${r.hora} hrs · ${r.nombre}</h4>
+            <p>${r.estado==='confirmada'?'✓ Confirmada':'⏳ Pendiente de pago'} · ${r.email} · ${r.tel}</p>
+          </div>
+        `).join('')}
+        ${bloqueosD.filter(b=>b.tipo==='slot').map(b=>`<div class="dia-bloqueo">🚫 ${b.hora} hrs bloqueado${b.motivo?' — '+b.motivo:''}</div>`).join('')}
+      </div>`;
+  }
+
+  el.innerHTML = `
+    <div class="pcal-nav">
+      <button class="pcal-btn" onclick="cambiarMesCal(-1)">‹</button>
+      <span class="pcal-mes">${MESES_C[calMes.getMonth()]} ${calMes.getFullYear()}</span>
+      <button class="pcal-btn" onclick="cambiarMesCal(1)">›</button>
+    </div>
+    <div class="pcal-grid">${diasHTML}</div>
+    <div class="pcal-leyenda">
+      <div class="pcal-leg"><div class="pcal-leg-dot ev-conf"></div>Confirmada</div>
+      <div class="pcal-leg"><div class="pcal-leg-dot ev-pend"></div>Pendiente de pago</div>
+      <div class="pcal-leg"><div class="pcal-leg-dot" style="background:rgba(193,127,10,.15);border:1px solid rgba(193,127,10,.3);"></div>Bloqueado</div>
+    </div>
+    ${detalleHTML}
+  `;
+}
+
+function cambiarMesCal(d) {
+  calMes.setMonth(calMes.getMonth()+d);
+  renderCalendario();
+}
+
+function verDia(fs) {
+  diaSeleccionado = diaSeleccionado===fs ? null : fs;
+  renderCalendario();
+}
+
+// ── CONCEPTO DE PAGO ──
+function generarConcepto(nombre) {
+  // Quitar acentos, convertir a mayúsculas, quitar caracteres especiales
+  const limpio = nombre.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+  const concepto = 'SB ' + limpio;
+  return concepto.substring(0, 40); // máximo 40 caracteres SPEI
+}
+
+// ── TABS (actualizado con calendario) ──
+const TIDS = ['pendientes','confirmadas','calendario','historial','bloqueos','config'];
 function showTab(id) {
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', TIDS[i]===id));
   document.querySelectorAll('.tc').forEach((c,i)=>c.classList.toggle('active', TIDS[i]===id));
+  if(id==='calendario') renderCalendario();
 }
 
 // ── INICIO ──
