@@ -11,7 +11,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+function switchTray(id, el) {
+  document.querySelectorAll('.tray-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tray-exp').style.display = id === 'exp' ? 'block' : 'none';
+  document.getElementById('tray-form').style.display = id === 'form' ? 'block' : 'none';
+}
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -158,6 +165,12 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
 .error-msg{background:#fef0f0;border:1px solid #f5c6c6;border-radius:var(--r);padding:14px 16px;font-size:13px;color:#c0392b;margin-top:12px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.di{transform:none!important;}}
+/* TRAYECTORIA TABS */
+.tray-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--b);}
+.tray-tab{padding:10px 24px;font-size:14px;font-weight:400;color:var(--ca2);cursor:pointer;background:none;border:none;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+.tray-tab.active{color:var(--v);font-weight:500;border-bottom-color:var(--v);}
+.tray-tab:hover{color:var(--v);}
+.tray-block{animation:fadeUp .3s var(--ease);}
 </style>
 </head>
 <body>
@@ -239,8 +252,182 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
   <button class="back" onclick="closeView('trayectoria')">← Regresar</button>
   <p class="dl">Trayectoria</p>
   <h2 class="dh">Mi camino<br>en <em>la sanación</em></h2>
-  <div class="tl">
-    <div class="tlr"><div class="tly">2007–2014</div><div><h4>Yoga Terapéutico · Arati Jurica</h4><p>7 años como practicante — base del trabajo consciente con el cuerpo.</p></div></div>
+
+  <!-- TABS internos -->
+  <div class="tray-tabs">
+    <button class="tray-tab active" onclick="switchTray('exp',this)">Experiencia</button>
+    <button class="tray-tab" onclick="switchTray('form',this)">Formación</button>
+  </div>
+
+  <!-- EXPERIENCIA -->
+  <div id="tray-exp" class="tray-block">
+    <div style="background:var(--v);border-radius:var(--r2);padding:18px 22px;margin-bottom:28px;display:flex;align-items:center;gap:14px;">
+      <span style="font-size:24px;flex-shrink:0;">🌿</span>
+      <div>
+        <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--vv);font-weight:500;margin-bottom:3px;">Experiencia</p>
+        <p style="font-size:14px;color:rgba(250,246,240,0.85);line-height:1.6;margin:0;">Lo que Silvia ha impartido, coordinado y aportado en su camino como sanadora.</p>
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="tlr">
+        <div class="tly">2013 – 2016</div>
+        <div>
+          <h4>Colaboradora e Instructora · Escuela Sirio, Samasati</h4>
+          <p>Colaboradora de la Maestra Patricia Espinosa en cursos de Control Mental, Psicodinamia, Vivencias y Ensoñaciones (turno matutino) y de la Maestra Ariadna Perea (turno vespertino). Fue en las prácticas de Sirio donde descubrió y desarrolló su intuición como sanadora.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2013 – 2016</div>
+        <div>
+          <h4>Sanadora · Centro Holístico Samasati, Juriquilla</h4>
+          <p>Sanación intuitiva, lectura de chakras, desbloqueo y alineación energética, imposición de manos y Angeloterapia. Facilitadora de meditaciones guiadas y aplicación de EFT–Tapping.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2013</div>
+        <div>
+          <h4>Coordinadora y Publicista · Taller "Sana Tu Vida"</h4>
+          <p>Coordinadora y publicista del Taller "Heal Your Life – Sana Tu Vida" con Verónica Hernández en el Centro de Yoga Arati, Jurica, Qro.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2013 – 2016</div>
+        <div>
+          <h4>Coordinadora de Conferencias · Ho'oponopono</h4>
+          <p>Coordinadora de conferencias de Ho'oponopono Arte Ancestral de Sanación Hawaiana, impartidas por Patricia Espinosa en Escuela Sirio.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2014 – 2015</div>
+        <div>
+          <h4>Instructora · Taller "Yo, mi mejor amigo"</h4>
+          <p>Taller de autoestima infantil en sociedad con Patricia Espinosa en el espacio holístico Azul Ceiba, Las Pawlonias. Los viernes de día de descanso escolar (SEP), durante toda la mañana.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2015</div>
+        <div>
+          <h4>Facilitadora · Taller para Adultos Mayores</h4>
+          <p>Taller de Terapia en Movimiento para adultos mayores, octubre 2015.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2014 – hoy</div>
+        <div>
+          <h4>Angeloterapeuta · Sesiones en línea</h4>
+          <p>Sesiones individuales de angeloterapia vía llamada telefónica. Lectura de chakras, liberación de bloqueos energéticos, alineación del campo energético y transmisión de mensajes de ángeles y seres de luz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMACIÓN -->
+  <div id="tray-form" class="tray-block" style="display:none;">
+    <div style="background:rgba(212,175,122,0.12);border:1px solid rgba(212,175,122,0.35);border-radius:var(--r2);padding:18px 22px;margin-bottom:28px;display:flex;align-items:center;gap:14px;">
+      <span style="font-size:24px;flex-shrink:0;">✨</span>
+      <div>
+        <p style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--do);font-weight:500;margin-bottom:3px;">Formación</p>
+        <p style="font-size:14px;color:var(--carbon);line-height:1.6;margin:0;">Cursos, talleres y certificaciones que sustentan la práctica de Silvia.</p>
+      </div>
+    </div>
+
+    <div class="tl">
+      <div class="tlr">
+        <div class="tly">2007 – 2014</div>
+        <div>
+          <h4>Yoga Terapéutico · Arati Jurica</h4>
+          <p>7 años como practicante — base del trabajo consciente con el cuerpo y la energía.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2008</div>
+        <div>
+          <h4>Semiología de la Vida Cotidiana</h4>
+          <p>Curso con Alfonso Ruiz, México (2008).</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2008 – 2011</div>
+        <div>
+          <h4>Constelaciones Familiares y Trabajo Interior</h4>
+          <p>Talleres de Constelaciones Familiares con el Dr. Daniel Carlón, Traumatólogo, Homeópata y Constelador. Método Pathwork basado en "No Temas al Mal" de Eva Pierrakos, impartido por el Dr. Daniel Carlón en Querétaro (2010–2011).</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2011</div>
+        <div>
+          <h4>Biomagnetismo · Dr. Gaspar</h4>
+          <p>Curso intensivo de Biomagnetismo, 30 y 31 de octubre 2011.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2012 – 2015</div>
+        <div>
+          <h4>Escuela Sirio · Centro Holístico Samasati</h4>
+          <p>Control Mental (2012–2015) · Psicodinamia (2012–2015) · Vivencias (2012–2015) · Ensoñaciones (2014–2015).</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2013</div>
+        <div>
+          <h4>Thetahealing · ADN Básico</h4>
+          <p>Curso de ADN Básico de Thetahealing con Gisela López Marmolejo.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2013</div>
+        <div>
+          <h4>Feldenkrais y Lienzos Dinámicos</h4>
+          <p>Taller de técnica Feldenkrais y Lienzos Dinámicos en Arati Jurica.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2013</div>
+        <div>
+          <h4>Danza Primal</h4>
+          <p>Taller con el instructor Christian Henry. Terapia creada en Argentina por el MDP Daniel Taroppio.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2014</div>
+        <div>
+          <h4>Radiestesia y Péndulo</h4>
+          <p>Taller Teórico-Práctico: Manejo del Péndulo como herramienta de Sanación con Rita María Arróniz Pérez.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2016</div>
+        <div>
+          <h4>Curso de Angelólogos · Doreen Virtue</h4>
+          <p>3 módulos del 10 al 26 de agosto 2016. Aprendizaje para dar Terapias Angelicales con enseñanzas de Doreen Virtue. Instructora: Mónica Peón Carmona.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2018</div>
+        <div>
+          <h4>Biomagnetismo · Dr. Heriberto Ruz</h4>
+          <p>Curso intensivo de Biomagnetismo, 2 de marzo 2018.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">2025</div>
+        <div>
+          <h4>Constelaciones Familiares · Dr. Daniel Carlón</h4>
+          <p>Actualización en Constelaciones Familiares con el Dr. Daniel Carlón en Querétaro.</p>
+        </div>
+      </div>
+      <div class="tlr">
+        <div class="tly">En curso</div>
+        <div>
+          <h4>Volver al Amor Constelando · Bert Hellinger</h4>
+          <p>Formación en Kinich Ahav basada en las enseñanzas de Bert Hellinger.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div></div>
     <div class="tlr"><div class="tly">2008–2011</div><div><h4>Trabajo interior y constelaciones</h4><p>Constelaciones Familiares con el Dr. Daniel Carlón. Método Pathwork basado en Eva Pierrakos. Semiología de la Vida Cotidiana con Alfonso Ruiz. Volver al Amor Constelando en Kinich Ahav, basado en enseñanzas de Bert Hellinger.</p></div></div>
     <div class="tlr"><div class="tly">2010–2015</div><div><h4>Escuela Sirio · Samasati</h4><p>Colaboradora, coordinadora, publicista y sanadora. Control Mental, Psicodinamia, Vivencias y Ensoñaciones con la Maestra Patricia Espinosa (turno matutino) y la Maestra Ariadna Perea (turno vespertino). Descubrimiento y desarrollo de su don de sanación a través de las prácticas.</p></div></div>
     <div class="tlr"><div class="tly">2011</div><div><h4>Biomagnetismo · Dr. Gaspar</h4><p>Curso intensivo, octubre 2011.</p></div></div>
