@@ -78,11 +78,15 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
 .tlr h4{font-size:15px;font-weight:500;color:var(--v);margin-bottom:4px;}
 .tlr p{font-size:13px;font-weight:300;color:var(--ca2);line-height:1.65;}
 @media(max-width:480px){.tlr{grid-template-columns:1fr;gap:4px;}}
-.tc{display:flex;flex-direction:column;gap:14px;margin-top:32px;}
-.tcard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:26px;}
-.tq{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--ca);line-height:1.65;margin-bottom:14px;}
-.tq::before{content:'\201C';color:var(--do);font-size:32px;line-height:0;vertical-align:-10px;margin-right:3px;}
-.tau{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--do);}
+.test-video-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px;}
+@media(max-width:560px){.test-video-grid{grid-template-columns:1fr;}}
+.test-video-card{background:white;border:1px solid var(--b);border-radius:var(--r2);overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.test-video-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,81,50,.1);}
+.test-video-wrap{position:relative;width:100%;aspect-ratio:9/16;background:#000;border-radius:var(--r2) var(--r2) 0 0;overflow:hidden;}
+.test-video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+.test-video-info{padding:14px 16px;}
+.test-video-nombre{font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--do);}
+.test-video-grid .test-video-card:last-child:nth-child(odd){grid-column:1/-1;max-width:280px;margin:0 auto;}
 .pbox{background:var(--v);border-radius:var(--r2);padding:48px 40px;text-align:center;margin-top:12px;}
 .pnum{font-family:'Cormorant Garamond',serif;font-size:clamp(72px,14vw,108px);font-weight:300;color:var(--cr);line-height:1;display:block;margin-bottom:6px;letter-spacing:-0.02em;}
 .pdet{font-size:13px;color:rgba(250,246,240,.5);margin-bottom:28px;}
@@ -259,12 +263,57 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
   <button class="back" onclick="closeView('testimonios')">← Regresar</button>
   <p class="dl">Testimonios</p>
   <h2 class="dh">Lo que dicen quienes<br>ya vivieron <em>una sesión</em></h2>
-  <div class="tc">
-    <div class="tcard"><p class="tq">Llegué sin saber qué esperar y salí con una claridad que no había sentido en años.</p><span class="tau">A. M. · Ciudad de México</span></div>
-    <div class="tcard"><p class="tq">Nunca había hecho algo así. Desde la primera sesión empecé a ver las cosas diferente.</p><span class="tau">L. R. · Guadalajara</span></div>
-    <div class="tcard"><p class="tq">Silvia tiene un don especial. Me sentí acompañada y segura en todo momento.</p><span class="tau">M. V. · Monterrey</span></div>
+  <p style="font-size:15px;font-weight:300;color:var(--ca2);margin-bottom:36px;line-height:1.7;">Personas reales compartiendo su experiencia después de una sesión de angeloterapia con Silvia.</p>
+
+  <div class="test-video-grid">
+
+    <div class="test-video-card">
+      <div class="test-video-wrap">
+        <iframe src="https://www.youtube.com/embed/dM0ErZ5D_rs" title="Testimonio 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="test-video-info">
+        <p class="test-video-nombre">[ Nombre · Ciudad ]</p>
+      </div>
+    </div>
+
+    <div class="test-video-card">
+      <div class="test-video-wrap">
+        <iframe src="https://www.youtube.com/embed/s9XRYMd_yeE" title="Testimonio 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="test-video-info">
+        <p class="test-video-nombre">[ Nombre · Ciudad ]</p>
+      </div>
+    </div>
+
+    <div class="test-video-card">
+      <div class="test-video-wrap">
+        <iframe src="https://www.youtube.com/embed/vkFE_ay8qzs" title="Testimonio 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="test-video-info">
+        <p class="test-video-nombre">[ Nombre · Ciudad ]</p>
+      </div>
+    </div>
+
+    <div class="test-video-card">
+      <div class="test-video-wrap">
+        <iframe src="https://www.youtube.com/embed/cIoOpWUzoac" title="Testimonio 4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="test-video-info">
+        <p class="test-video-nombre">[ Nombre · Ciudad ]</p>
+      </div>
+    </div>
+
+    <div class="test-video-card">
+      <div class="test-video-wrap">
+        <iframe src="https://www.youtube.com/embed/wh96oknggCU" title="Testimonio 5" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="test-video-info">
+        <p class="test-video-nombre">[ Nombre · Ciudad ]</p>
+      </div>
+    </div>
+
   </div>
-  <p style="font-size:12px;color:var(--ca2);font-style:italic;margin-top:20px;">* Testimonios en proceso de recopilación con nombres reales.</p>
+
   <div class="ddiv"></div>
   <a href="#" onclick="openView('agendar',event)" class="mb mb-main"><span>Quiero mi sesión</span><span class="mb-arr">→</span></a>
 </div></div>
