@@ -12,14 +12,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-function switchTray(id, el) {
-  document.querySelectorAll('.tray-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('tray-exp').style.display = id === 'exp' ? 'block' : 'none';
-  document.getElementById('tray-form').style.display = id === 'form' ? 'block' : 'none';
-}
-</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -166,6 +158,19 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
 .error-msg{background:#fef0f0;border:1px solid #f5c6c6;border-radius:var(--r);padding:14px 16px;font-size:13px;color:#c0392b;margin-top:12px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.di{transform:none!important;}}
+
+/* HERO SUBTITLE */
+.hero-sub{font-size:clamp(13px,1.8vw,15px);font-weight:400;color:var(--ca2);max-width:400px;margin-bottom:52px;line-height:1.75;letter-spacing:1px;opacity:0;animation:fadeUp .7s .42s var(--ease) forwards;}
+.hero-divider{color:var(--do);margin:0 10px;font-size:12px;}
+
+
+/* HERO SPACING */
+.hero-h1{margin-bottom:0;}
+.hero-spacer{height:56px;}
+@media(max-width:560px){.hero-spacer{height:40px;}}
+/* TYPEWRITER */
+.tw-cursor::after{content:'|';animation:blink .7s infinite;color:var(--v);font-weight:300;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 /* TRAYECTORIA TABS */
 .tray-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--b);}
 .tray-tab{padding:10px 24px;font-size:14px;font-weight:400;color:var(--ca2);cursor:pointer;background:none;border:none;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;}
@@ -184,8 +189,8 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
 <section id="home">
   <p class="kicker">Angeloterapia · Sesiones en línea</p>
   <h1 class="hero-h1">Tus ángeles tienen<br>un mensaje <em>para ti</em></h1>
-  <p class="hero-sub">Sesiones individuales con Silvia Busquets — +13 años acompañando procesos de sanación.</p>
-  <div class="home-menu">
+
+  <div class="home-menu" style="margin-top:64px;">
     <a href="#" class="mb mb-main" onclick="openView('agendar',event)"><span>Agendar mi sesión</span><span class="mb-arr">→</span></a>
     <div class="sep"></div>
     <a href="#" class="mb" onclick="openView('que-es',event)"><span>¿Qué es la angeloterapia?</span><span class="mb-arr">→</span></a>
@@ -193,7 +198,7 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
     <a href="#" class="mb" onclick="openView('silvia',event)"><span>Sobre Silvia</span><span class="mb-arr">→</span></a>
     <a href="#" class="mb" onclick="openView('trayectoria',event)"><span>Trayectoria y formación</span><span class="mb-arr">→</span></a>
     <a href="#" class="mb" onclick="openView('testimonios',event)"><span>Testimonios</span><span class="mb-arr">→</span></a>
-    <a href="#" class="mb" onclick="openView('precio',event)"><span>Precio · $555 MXN</span><span class="mb-arr">→</span></a>
+    <a href="#" class="mb" onclick="openView('precio',event)"><span>Precio</span><span class="mb-arr">→</span></a>
   </div>
 </section>
 
@@ -202,15 +207,18 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
   <button class="back" onclick="closeView('que-es')">← Regresar</button>
   <p class="dl">¿Qué es?</p>
   <h2 class="dh">El puente entre<br>tú y la <em>divinidad</em></h2>
-  <div class="dbody"><p>La angeloterapia es una sanación energética e intuitiva. Silvia realiza una lectura de tus chakras, libera bloqueos energéticos, mentales y emocionales, y alinea tu campo energético para prepararte a conectar con el mundo sutil: ese espacio de quietud interior donde es posible recibir mensajes de los ángeles y seres de luz. Ella se propone como instrumento de sanación, entrando en un estado de silencio mental y emocional —nivel alfa— para transmitirte únicamente lo que ellos comunican, sin filtros ni interpretaciones personales.</p><p>Por eso, al iniciar la sesión Silvia te pide que no compartas detalles de tu situación hasta que termine: así el mensaje llega puro, directo de la fuente. Muchos pacientes se sorprenden al escuchar cosas que nadie más podría saber —incluso lo que sienten sus seres queridos respecto a un conflicto—, y después de la sesión comienzan a experimentar claridad, alivio emocional y sincronicidades que Silvia llama diosidencias: señales de que la sanación ya está en movimiento.</p></div>
-  <div class="qe-cards">
+  <div class="dbody" id="que-es-body">
+    <p id="tw-p1" style="min-height:1.8em;"></p>
+    <p id="tw-p2" style="min-height:1.8em;margin-top:14px;"></p>
+  </div>
+  <div class="qe-cards" id="que-es-cards" style="opacity:0;transition:opacity 0.8s ease;">
     <div class="qe"><span class="qe-ic">🌿</span><div><h4>Sanación emocional</h4><p>Libera bloqueos y heridas desde la raíz energética.</p></div></div>
     <div class="qe"><span class="qe-ic">✨</span><div><h4>Claridad y dirección</h4><p>Recibe mensajes de tus ángeles sobre situaciones de tu vida.</p></div></div>
     <div class="qe"><span class="qe-ic">💚</span><div><h4>Reconexión contigo</h4><p>Recupera tu intuición, tu fuerza interior y tu propósito.</p></div></div>
     <div class="qe"><span class="qe-ic">📞</span><div><h4>100% en línea</h4><p>Llamada telefónica — sin video, sin cámara.</p></div></div>
   </div>
-  <div class="ddiv"></div>
-  <a href="#" onclick="openView('agendar',event)" class="mb mb-main"><span>Agendar mi sesión</span><span class="mb-arr">→</span></a>
+  <div class="ddiv" id="que-es-ddiv" style="opacity:0;transition:opacity 0.8s ease;"></div>
+  <a href="#" onclick="openView('agendar',event)" class="mb mb-main" id="que-es-btn" style="opacity:0;transition:opacity 0.8s ease;"><span>Agendar mi sesión</span><span class="mb-arr">→</span></a>
 </div></div>
 
 <!-- CÓMO -->
@@ -429,28 +437,15 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
   </div>
 
 </div></div>
-    <div class="tlr"><div class="tly">2008–2011</div><div><h4>Trabajo interior y constelaciones</h4><p>Constelaciones Familiares con el Dr. Daniel Carlón. Método Pathwork basado en Eva Pierrakos. Semiología de la Vida Cotidiana con Alfonso Ruiz. Volver al Amor Constelando en Kinich Ahav, basado en enseñanzas de Bert Hellinger.</p></div></div>
-    <div class="tlr"><div class="tly">2010–2015</div><div><h4>Escuela Sirio · Samasati</h4><p>Colaboradora, coordinadora, publicista y sanadora. Control Mental, Psicodinamia, Vivencias y Ensoñaciones con la Maestra Patricia Espinosa (turno matutino) y la Maestra Ariadna Perea (turno vespertino). Descubrimiento y desarrollo de su don de sanación a través de las prácticas.</p></div></div>
-    <div class="tlr"><div class="tly">2011</div><div><h4>Biomagnetismo · Dr. Gaspar</h4><p>Curso intensivo, octubre 2011.</p></div></div>
-    <div class="tlr"><div class="tly">2013</div><div><h4>Thetahealing · Louise Hay · Feldenkrais</h4><p>ADN Básico con Gisela López Marmolejo. Sana Tu Vida con Verónica Hernández. Feldenkrais en Arati Jurica. Danza Primal con Christian Henry (método de Daniel Taroppio).</p></div></div>
-    <div class="tlr"><div class="tly">2010–2016</div><div><h4>Instructora · Escuela Sirio</h4><p>6 años en Samasati. Ho'oponopono, Sanación Hawaiana, EFT, meditaciones, lectura de chakras, taller 'Yo, mi mejor amigo'.</p></div></div>
-    <div class="tlr"><div class="tly">2013–2015</div><div><h4>Método Louise Hay · Taller "Sana Tu Vida"</h4><p>Coordinadora y publicista del taller con Verónica Hernández en el Centro de Yoga Arati, Jurica.</p></div></div>
-      <div class="tlr"><div class="tly">2014</div><div><h4>Radiestesia y Péndulo</h4><p>Taller con Rita María Arróniz Pérez.</p></div></div>
-    <div class="tlr"><div class="tly">2014–2015</div><div><h4>Taller infantil "Yo, mi mejor amigo"</h4><p>Taller de autoestima infantil en sociedad con Patricia Espinosa en Azul Ceiba, Las Pawlonias.</p></div></div>
-      <div class="tlr"><div class="tly">2015</div><div><h4>Talleres para Adultos Mayores</h4><p>Terapia de Movimiento, octubre 2015.</p></div></div>
-      <div class="tlr"><div class="tly">2015</div><div><h4>Reiki Usui Japonés · 1er Grado</h4><p>Canalización y transmisión de energía sanadora.</p></div></div>
-    <div class="tlr"><div class="tly">2016</div><div><h4>Angelólogos · Doreen Virtue</h4><p>3 módulos, agosto 2016. Instructora: Mónica Peón Carmona.</p></div></div>
-    <div class="tlr"><div class="tly">2018</div><div><h4>Biomagnetismo · Dr. Heriberto Ruz</h4><p>Curso intensivo, marzo 2018.</p></div></div>
-    <div class="tlr"><div class="tly">Hoy</div><div><h4>Silvia Busquets · Angeloterapeuta en línea</h4><p>Más de una década de experiencia, ahora con una plataforma formal. Sesiones individuales en línea desde donde estés.</p></div></div>
-  </div>
-</div></div>
 
 <!-- TESTIMONIOS -->
 <div id="view-testimonios" class="dv"><div class="di">
   <button class="back" onclick="closeView('testimonios')">← Regresar</button>
   <p class="dl">Testimonios</p>
   <h2 class="dh">Lo que dicen quienes<br>ya vivieron <em>una sesión</em></h2>
-  <p style="font-size:15px;font-weight:300;color:var(--ca2);margin-bottom:36px;line-height:1.7;">Personas reales compartiendo su experiencia después de una sesión de angeloterapia con Silvia.</p>
+  <div style="border-left:3px solid var(--do);padding:14px 20px;margin-bottom:36px;background:rgba(212,175,122,0.07);border-radius:0 var(--r) var(--r) 0;">
+    <p style="font-size:15px;font-weight:300;color:var(--ca);line-height:1.7;font-style:italic;">Personas reales compartiendo su experiencia después de una sesión de angeloterapia con Silvia.</p>
+  </div>
 
   <div class="test-video-grid">
 
@@ -512,9 +507,8 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
   <h2 class="dh">Una sesión que puede<br><em>cambiarlo todo</em></h2>
   <div class="pbox">
     <span class="pnum">$555</span>
-    <p class="pdet">MXN · 1 a 2 horas aprox · llamada telefónica · 100% en línea</p>
-    <p class="pdesc">Pago único por transferencia bancaria. Sin comisiones ni pagos adicionales.</p>
-    <button class="btn-ag" onclick="openView('agendar',event)">Elegir mi fecha y hora</button>
+    <p class="pdet" style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:rgba(250,246,240,0.4);margin-bottom:40px;">MXN</p>
+    <button class="btn-ag" onclick="openView('agendar',event)">Elegir mi fecha y hora →</button>
   </div>
 </div></div>
 
@@ -648,7 +642,10 @@ function openView(id, e) {
   el.style.display = 'block';
   el.scrollTop = 0;
   if(id === 'agendar') { agPasoN = 1; mostrarPaso(1); cargarDatos(); }
-  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open', 'visible')));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.classList.add('open', 'visible');
+    if(id === 'que-es') { setTimeout(startTypewriter, 300); }
+  }));
 }
 
 function closeView(id) {
@@ -845,6 +842,67 @@ function copiarCLABE() {
   navigator.clipboard?.writeText(cfg.clabe).then(() => {
     const b = document.querySelector('.copybtn'); b.textContent = '✓'; setTimeout(() => b.textContent = 'Copiar', 1500);
   });
+}
+
+// ── TYPEWRITER para ¿Qué es? ──
+const TW_P1 = 'La angeloterapia es una sanación energética e intuitiva. Silvia realiza una lectura de tus chakras, libera bloqueos energéticos, mentales y emocionales, y alinea tu campo energético para prepararte a conectar con el mundo sutil: ese espacio de quietud interior donde es posible recibir mensajes de los ángeles y seres de luz. Ella se propone como instrumento de sanación, entrando en un estado de silencio mental y emocional —nivel alfa— para transmitirte únicamente lo que ellos comunican, sin filtros ni interpretaciones personales.';
+const TW_P2 = 'Por eso, al iniciar la sesión Silvia te pide que no compartas detalles de tu situación hasta que termine: así el mensaje llega puro, directo de la fuente. Muchos pacientes se sorprenden al escuchar cosas que nadie más podría saber —incluso lo que sienten sus seres queridos respecto a un conflicto—, y después de la sesión comienzan a experimentar claridad, alivio emocional y sincronicidades que Silvia llama diosidencias: señales de que la sanación ya está en movimiento.';
+
+let twStarted = false;
+
+function startTypewriter() {
+  if(twStarted) return;
+  twStarted = true;
+  const totalChars = TW_P1.length + TW_P2.length;
+  const totalMs = 2000;
+  const delay = totalMs / totalChars;
+  const p1 = document.getElementById('tw-p1');
+  const p2 = document.getElementById('tw-p2');
+  const cards = document.getElementById('que-es-cards');
+  const ddiv = document.getElementById('que-es-ddiv');
+  const btn = document.getElementById('que-es-btn');
+  if(!p1) return;
+
+  let i = 0;
+  p1.classList.add('tw-cursor');
+
+  function type() {
+    if(i < TW_P1.length) {
+      p1.textContent = TW_P1.slice(0, i+1);
+      i++;
+      setTimeout(type, delay);
+    } else if(i === TW_P1.length) {
+      p1.classList.remove('tw-cursor');
+      p2.classList.add('tw-cursor');
+      i++;
+      setTimeout(type, delay * 3);
+    } else {
+      const j = i - TW_P1.length - 1;
+      if(j < TW_P2.length) {
+        p2.textContent = TW_P2.slice(0, j+1);
+        i++;
+        setTimeout(type, delay);
+      } else {
+        // Terminó — mostrar cards y botón
+        p2.classList.remove('tw-cursor');
+        if(cards) { cards.style.opacity = '1'; }
+        if(ddiv) { ddiv.style.opacity = '1'; }
+        if(btn) { btn.style.opacity = '1'; }
+      }
+    }
+  }
+  type();
+}
+
+// Detectar cuando se abre la vista de qué es
+const origOpenView = openView;
+
+// ── TRAYECTORIA TABS ──
+function switchTray(id, el) {
+  document.querySelectorAll('.tray-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tray-exp').style.display = id === 'exp' ? 'block' : 'none';
+  document.getElementById('tray-form').style.display = id === 'form' ? 'block' : 'none';
 }
 </script>
 </body>
