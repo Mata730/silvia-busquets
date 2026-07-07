@@ -848,6 +848,9 @@ async function confirmarReserva() {
   const tel = lada + ' ' + telNum;
   const fnac = document.getElementById('inp-fnac').value;
   const fs = isoF(fechaSel);
+  // Calcular hora en zona del usuario
+  const zonaUser = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const horaDisplay = formatHora(horaSel, true); // "5:00 p.m. hora México (6:00 p.m. tu hora)"
   const reserva = {
     id: 'R' + Date.now(),
     nombre, email, tel,
@@ -855,6 +858,8 @@ async function confirmarReserva() {
     fecha: fs,
     fecha_larga: fechaLarga(fechaSel),
     hora: horaSel,
+    hora_display: horaDisplay,
+    zona_horaria: zonaUser,
     estado: 'pendiente'
   };
   try {
@@ -865,7 +870,7 @@ async function confirmarReserva() {
     // Paso 4
     document.getElementById('email-pend').textContent = email;
     document.getElementById('pend-fecha').textContent = reserva.fecha_larga;
-    document.getElementById('pend-hora').textContent = horaSel + ' hrs';
+    document.getElementById('pend-hora').textContent = formatHora(horaSel, true);
     mostrarPaso(4);
   } catch(err) {
     document.getElementById('error-reserva').innerHTML = '<div class="error-msg">Hubo un problema al guardar tu reserva. Inténtalo de nuevo o escríbele a Silvia por Instagram.</div>';
@@ -931,6 +936,57 @@ function startTypewriter() {
 
 // Detectar cuando se abre la vista de qué es
 const origOpenView = openView;
+
+// ── FORMATO DE HORA CON ZONA HORARIA DEL USUARIO ──
+function formatHora(hora24, mostrarZona) {
+  try {
+    const zonaUser = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const zonaMx = 'America/Mexico_City';
+    const hoy = new Date();
+    const fechaStr = hoy.getFullYear() + '-' +
+      String(hoy.getMonth()+1).padStart(2,'0') + '-' +
+      String(hoy.getDate()).padStart(2,'0');
+
+    // Hora como UTC para luego convertir correctamente
+    const [hh, mm] = hora24.split(':').map(Number);
+    const ref = new Date(fechaStr + 'T' + hora24 + ':00');
+
+    // Obtener offset de México vs UTC
+    const mxH = parseInt(new Intl.DateTimeFormat('en-US',{
+      timeZone: zonaMx, hour:'2-digit', hour12:false
+    }).format(ref));
+    const diffH = hh - mxH;
+    const adjusted = new Date(ref.getTime() + diffH * 3600000);
+
+    // Formatear en zona del usuario
+    const parts = new Intl.DateTimeFormat('es-MX', {
+      timeZone: zonaUser,
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZoneName: 'short'
+    }).formatToParts(adjusted);
+
+    const hPart = parts.find(p=>p.type==='hour')?.value || hh;
+    const mPart = parts.find(p=>p.type==='minute')?.value || '00';
+    const dPart = (parts.find(p=>p.type==='dayPeriod')?.value || '').toLowerCase();
+    const tzPart = parts.find(p=>p.type==='timeZoneName')?.value || '';
+    const periodo = dPart.startsWith('p') ? 'p.m.' : 'a.m.';
+    const minStr = mPart === '00' ? '' : ':' + mPart;
+
+    if(!mostrarZona) return hPart + minStr + ' ' + periodo;
+    return hPart + minStr + ' ' + periodo + ' ' + tzPart;
+
+  } catch(e) {
+    // Fallback si el navegador no soporta Intl
+    const [hh2, mm2] = hora24.split(':').map(Number);
+    const per = hh2 >= 12 ? 'p.m.' : 'a.m.';
+    const h12 = hh2 === 0 ? 12 : hh2 > 12 ? hh2 - 12 : hh2;
+    const mStr = mm2 === 0 ? '' : ':' + String(mm2).padStart(2,'0');
+    if(!mostrarZona) return h12 + mStr + ' ' + per;
+    return h12 + mStr + ' ' + per;
+  }
+}
 
 // ── TRAYECTORIA TABS ──
 function switchTray(id, el) {
