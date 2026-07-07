@@ -614,7 +614,12 @@ nav.scrolled{background:rgba(250,246,240,.93);backdrop-filter:blur(20px);border-
         </div>
       </div>
       <div class="pdato"><span>Monto exacto</span><strong>$555.00 MXN</strong></div>
-      <p class="paviso">📧 Al dar clic recibirás un correo con los datos de pago. <strong>Tienes 1 hora</strong> para realizar la transferencia y confirmar tu sesión.</p>
+      <div style="background:#fff3cd;border:1.5px solid #f0c000;border-radius:var(--r);padding:14px 18px;margin-top:4px;">
+        <p style="margin:0;font-size:14px;color:#856404;line-height:1.65;">
+          📧 Al dar clic recibirás un correo con los datos de pago.<br>
+          <strong style="font-size:15px;color:#5a3e00;">⏰ Tienes 1 hora para realizar la transferencia y confirmar tu sesión.</strong>
+        </p>
+      </div>
     </div>
     <div id="error-reserva"></div>
     <button class="btn-p" id="btn-confirmar" onclick="confirmarReserva()">Apartar mi lugar — recibirás los datos de pago por correo</button>
@@ -801,7 +806,8 @@ function renderHorarios() {
     const ocup = slotsOcupados.includes(fs+'|'+h) || horaBloquead(fs, h);
     const btn = document.createElement('button');
     btn.className = 'hb' + (ocup?' ocup':'') + (horaSel===h?' sel':'');
-    btn.textContent = h; btn.disabled = ocup;
+    btn.textContent = typeof formatHora === 'function' ? formatHora(h, false) : h;
+    btn.disabled = ocup;
     if(!ocup) btn.onclick = () => { horaSel = h; renderHorarios(); validarAg2(); };
     grid.appendChild(btn);
   });
