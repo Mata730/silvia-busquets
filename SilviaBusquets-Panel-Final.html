@@ -2,850 +2,1079 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel · Silvia Busquets</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050505">
+<title>FORJA — Entrenamiento de fútbol personalizado</title>
+<meta name="description" content="El plan de fútbol que ninguna academia puede darte. Personalizado por posición, entorno y nivel.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --v:#0F5132;--vv:#50C878;--cr:#FAF6F0;--do:#D4AF7A;
-  --ca:#3A3A3A;--ca2:#5c5c5c;--vm:#1a6b43;
-  --b:rgba(15,81,50,0.12);--b2:rgba(15,81,50,0.22);
-  --warn:#c17f0a;--wb:#fef9ec;--wbo:#f0d070;
-  --ok:#0F5132;--ob:#edf7f1;--obo:#a8dbb8;
-  --r:8px;--r2:12px;
-}
-body{font-family:'Inter',sans-serif;background:#f5f4f0;color:var(--ca);min-height:100vh;-webkit-font-smoothing:antialiased;}
-/* LOGIN */
-#login-scr{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
-.lcard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:48px 40px;width:100%;max-width:340px;text-align:center;}
-.llogo{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--v);margin-bottom:8px;}
-.lsub{font-size:13px;color:var(--ca2);margin-bottom:32px;}
-.lcard input{width:100%;padding:12px 14px;border:1px solid var(--b2);border-radius:var(--r);font-size:15px;font-family:inherit;color:var(--ca);outline:none;margin-bottom:12px;transition:border-color .15s;}
-.lcard input:focus{border-color:var(--v);}
-.lbtn{width:100%;padding:13px;border-radius:40px;background:var(--v);color:white;font-size:15px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .18s;}
-.lbtn:hover{background:var(--vm);}
-.lerr{font-size:13px;color:#c0392b;margin-top:10px;display:none;}
-.linfo{font-size:12px;color:var(--ca2);margin-top:16px;line-height:1.5;}
-/* PANEL */
-#panel{display:none;}
-.topbar{background:white;border-bottom:1px solid var(--b);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.tlogo{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--v);}
-.tright{display:flex;align-items:center;gap:12px;}
-.bpend{background:var(--wb);color:var(--warn);border:1px solid var(--wbo);border-radius:40px;padding:4px 12px;font-size:12px;font-weight:500;}
-.logoutbtn{font-size:13px;color:var(--ca2);background:none;border:none;cursor:pointer;font-family:inherit;}
-.logoutbtn:hover{color:var(--ca);}
-.pinner{max-width:920px;margin:0 auto;padding:28px 20px 80px;}
-.ptit{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--v);margin-bottom:4px;}
-.psub{font-size:13px;color:var(--ca2);margin-bottom:24px;}
-/* STATS */
-.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px;}
-.scard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:16px 18px;}
-.slbl{font-size:11px;font-weight:500;color:var(--ca2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
-.snum{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--v);line-height:1;}
-/* TABS */
-.tabs{display:flex;gap:0;margin-bottom:22px;border-bottom:1px solid var(--b);overflow-x:auto;}
-.tab{padding:10px 16px;font-size:13px;font-weight:400;color:var(--ca2);cursor:pointer;background:none;border:none;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap;}
-.tab.active{color:var(--v);font-weight:500;border-bottom-color:var(--v);}
-.tc{display:none;}
-.tc.active{display:block;}
-/* CARDS RESERVA */
-.empty{text-align:center;padding:48px 20px;color:var(--ca2);font-size:14px;}
-.empty span{display:block;font-size:30px;margin-bottom:8px;}
-.rcard{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:18px 20px;margin-bottom:10px;}
-.rtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
-.rinfo h3{font-size:15px;font-weight:500;color:var(--ca);margin-bottom:3px;}
-.rfecha{font-size:14px;font-weight:500;color:var(--v);margin:4px 0;}
-.rcon{font-size:12px;color:var(--ca2);}
-.rcon a{color:var(--v);text-decoration:none;}
-.rts{font-size:11px;color:var(--ca2);margin-top:3px;}
-.badge{border-radius:40px;padding:4px 12px;font-size:12px;font-weight:500;border:1px solid;white-space:nowrap;}
-.bp{background:var(--wb);color:var(--warn);border-color:var(--wbo);}
-.bc{background:var(--ob);color:var(--ok);border-color:var(--obo);}
-.bx{background:#fef0f0;color:#c0392b;border-color:#f5c6c6;}
-.ract{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.bsm{padding:7px 15px;border-radius:40px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid;transition:all .15s;}
-.bcf{background:var(--v);color:white;border-color:var(--v);}
-.bcf:hover{background:var(--vm);}
-.bcx{background:white;color:#c0392b;border-color:#f5c6c6;}
-.bcx:hover{background:#fef0f0;}
-.bem{background:white;color:var(--v);border-color:var(--b2);}
-.bem:hover{border-color:var(--v);}
-/* CONFIG */
-.csec{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:20px;margin-bottom:12px;}
-.csec h3{font-size:14px;font-weight:500;color:var(--v);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--b);}
-.cf{margin-bottom:12px;}
-.cf:last-child{margin-bottom:0;}
-.cf label{display:block;font-size:11px;font-weight:500;color:var(--ca2);margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase;}
-.cf input,.cf select{width:100%;padding:10px 12px;border:1px solid var(--b2);border-radius:var(--r);font-size:14px;font-family:inherit;color:var(--ca);outline:none;transition:border-color .15s;}
-.cf input:focus,.cf select:focus{border-color:var(--v);}
-.tgrid{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
-.tg{padding:7px 12px;border:1px solid var(--b2);border-radius:40px;cursor:pointer;font-size:13px;transition:all .15s;background:white;user-select:none;}
-.tg.on{background:var(--v);color:white;border-color:var(--v);}
-.bsave{padding:10px 24px;border-radius:40px;background:var(--v);color:white;font-size:14px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .15s;}
-.bsave:hover{background:var(--vm);}
-.saveok{font-size:13px;color:var(--ok);margin-left:10px;opacity:0;transition:opacity .3s;}
-.saveok.show{opacity:1;}
-/* BLOQUEOS */
-.blist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.bitem{display:flex;align-items:center;justify-content:space-between;background:var(--wb);border:1px solid var(--wbo);border-radius:var(--r);padding:10px 14px;}
-.binfo{font-size:13px;color:var(--ca);}
-.btipo{font-size:11px;font-weight:500;color:var(--warn);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
-.bdelbtn{background:none;border:none;color:#c0392b;cursor:pointer;font-size:18px;line-height:1;padding:2px 6px;border-radius:4px;transition:background .15s;}
-.bdelbtn:hover{background:#fef0f0;}
-.addform{background:rgba(15,81,50,.04);border:1px solid var(--b2);border-radius:var(--r2);padding:16px;margin-top:10px;}
-.addform h4{font-size:13px;font-weight:500;color:var(--v);margin-bottom:12px;}
-.ttabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.ttab{padding:6px 13px;border:1px solid var(--b2);border-radius:40px;font-size:12px;cursor:pointer;background:white;font-family:inherit;transition:all .15s;}
-.ttab.on{background:var(--v);color:white;border-color:var(--v);}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-@media(max-width:480px){.frow{grid-template-columns:1fr;}}
-.frow3{grid-template-columns:1fr 1fr 1fr;}
-.flbl{font-size:11px;font-weight:500;color:var(--ca2);display:block;margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase;}
-.finput{width:100%;padding:9px 11px;border:1px solid var(--b2);border-radius:var(--r);font-size:14px;font-family:inherit;color:var(--ca);outline:none;transition:border-color .15s;}
-.finput:focus{border-color:var(--v);}
-.badd{padding:8px 18px;border-radius:40px;background:var(--v);color:white;font-size:13px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .15s;}
-.badd:hover{background:var(--vm);}
-/* CALENDARIO PANEL */
-.pcal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.pcal-mes{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--v);}
-.pcal-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--b2);background:white;cursor:pointer;font-size:16px;color:var(--v);display:flex;align-items:center;justify-content:center;transition:background .15s;font-family:inherit;}
-.pcal-btn:hover{background:var(--v);color:white;}
-.pcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:24px;}
-.pcal-dl{text-align:center;font-size:11px;font-weight:500;color:var(--ca2);padding:6px 0;letter-spacing:.5px;}
-.pcal-day{min-height:72px;border-radius:var(--r);padding:6px;background:white;border:1px solid var(--b);position:relative;vertical-align:top;}
-.pcal-day.hoy{border-color:var(--v);border-width:2px;}
-.pcal-day.otro-mes{background:rgba(0,0,0,.02);border-color:transparent;}
-.pcal-day.bloqueado{background:rgba(193,127,10,.06);border-color:rgba(193,127,10,.2);}
-.pcal-num{font-size:12px;font-weight:500;color:var(--ca2);margin-bottom:4px;}
-.pcal-day.hoy .pcal-num{color:var(--v);font-weight:700;}
-.pcal-evento{font-size:11px;border-radius:4px;padding:2px 5px;margin-bottom:2px;line-height:1.3;cursor:pointer;transition:opacity .15s;}
-.pcal-evento:hover{opacity:.8;}
-.ev-conf{background:#edf7f1;color:#0F5132;border:1px solid #a8dbb8;}
-.ev-pend{background:#fef9ec;color:#c17f0a;border:1px solid #f0d070;}
-.ev-blk{background:rgba(193,127,10,.08);color:#c17f0a;font-style:italic;}
-.pcal-leyenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;}
-.pcal-leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ca2);}
-.pcal-leg-dot{width:10px;height:10px;border-radius:3px;}
-/* DETALLE DÍA */
-.dia-detalle{background:white;border:1px solid var(--b);border-radius:var(--r2);padding:20px;margin-top:16px;}
-.dia-detalle h3{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--v);margin-bottom:14px;}
-.dia-sesion{padding:12px;border-radius:var(--r);margin-bottom:8px;border:1px solid;}
-.dia-sesion.conf{background:#edf7f1;border-color:#a8dbb8;}
-.dia-sesion.pend{background:#fef9ec;border-color:#f0d070;}
-.dia-sesion h4{font-size:14px;font-weight:500;color:var(--ca);margin-bottom:2px;}
-.dia-sesion p{font-size:12px;color:var(--ca2);}
-.dia-bloqueo{padding:10px;border-radius:var(--r);background:rgba(193,127,10,.06);border:1px solid rgba(193,127,10,.2);margin-bottom:8px;font-size:13px;color:#c17f0a;}
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:center;justify-content:center;padding:20px;}
-.mbg.open{display:flex;}
-.modal{background:white;border-radius:var(--r2);padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
-.modal h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--v);margin-bottom:10px;}
-.modal p{font-size:14px;color:var(--ca2);line-height:1.65;margin-bottom:10px;}
-.eprev{background:var(--cr);border:1px solid var(--b2);border-radius:var(--r);padding:14px;font-size:12px;color:var(--ca);line-height:1.7;margin:12px 0;white-space:pre-wrap;max-height:220px;overflow-y:auto;}
-.macts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
-.mbpr{padding:10px 20px;border-radius:40px;background:var(--v);color:white;font-size:14px;font-weight:500;font-family:inherit;border:none;cursor:pointer;transition:background .15s;}
-.mbpr:hover{background:var(--vm);}
-.mbsc{padding:10px 20px;border-radius:40px;background:white;color:var(--ca2);font-size:14px;font-weight:500;font-family:inherit;border:1px solid var(--b2);cursor:pointer;transition:all .15s;}
-.mbsc:hover{border-color:var(--ca2);}
-.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
-@keyframes spin{to{transform:rotate(360deg)}}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  :root{
+    --gold:#C8941A;--gold-light:#F5D078;--gold-hover:#E5AB2A;--gold-dim:rgba(200,148,26,.12);
+    --bg:#050505;--bg-2:#0D0D0D;--bg-3:#141414;--bg-4:#1A1A1A;
+    --border:#1E1E1E;--border-2:#2A2A2A;
+    --text:#F5F5F5;--text-2:#A0A0A0;--text-3:#666;
+    --danger:#E85D5D;--success:#4A9E5F;
+    --r:10px;--r2:16px;--r3:20px;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+  }
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+  .container{max-width:1140px;margin:0 auto;padding:0 24px;width:100%}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;background:rgba(5,5,5,.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:.5px solid var(--border);z-index:100;padding:12px 0;transition:background .3s}
+  nav.scrolled{background:rgba(5,5,5,.95)}
+  .nav-inner{display:flex;justify-content:space-between;align-items:center}
+  .nav-logo{display:flex;align-items:center;cursor:pointer;text-decoration:none}
+  .nav-logo img{height:44px;width:auto;display:block}
+  .nav-cta{font-size:12px;padding:10px 20px;background:var(--gold);color:#000;border-radius:32px;font-weight:600;text-decoration:none;letter-spacing:.3px;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
+  .nav-cta:hover{background:var(--gold-hover);transform:translateY(-1px)}
+
+  /* HERO */
+  .hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:
+    radial-gradient(ellipse 800px 500px at 50% 20%,rgba(200,148,26,.10) 0%,transparent 60%),
+    radial-gradient(ellipse 600px 400px at 20% 80%,rgba(200,148,26,.05) 0%,transparent 60%);
+    pointer-events:none}
+  .hero-content{position:relative;z-index:2;width:100%;max-width:880px}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;padding:7px 16px;border:.5px solid var(--gold);border-radius:24px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;font-weight:500}
+  .hero-badge::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .hero-title{font-size:clamp(36px,7vw,68px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:24px}
+  .hero-title .gold{color:var(--gold)}
+  .hero-sub{font-size:clamp(15px,2vw,18px);color:var(--text-2);max-width:560px;margin:0 auto 40px;line-height:1.65;font-weight:400}
+  .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#000;padding:17px 32px;border-radius:40px;font-size:15px;font-weight:600;text-decoration:none;letter-spacing:.2px;transition:all .2s;box-shadow:0 8px 32px rgba(200,148,26,.25);border:none;cursor:pointer;font-family:inherit}
+  .btn-primary:hover{background:var(--gold-hover);transform:translateY(-2px);box-shadow:0 12px 40px rgba(200,148,26,.35)}
+  .btn-primary:disabled{background:var(--bg-4);color:var(--text-3);cursor:not-allowed;box-shadow:none;transform:none}
+  .btn-primary .arrow{transition:transform .2s}
+  .btn-primary:hover:not(:disabled) .arrow{transform:translateX(4px)}
+
+  /* SECCIONES */
+  section{padding:100px 0;position:relative}
+  section+section{border-top:.5px solid var(--border)}
+  .eyebrow{display:inline-block;font-size:11px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;font-weight:600}
+  .h2{font-size:clamp(28px,4.5vw,44px);font-weight:700;letter-spacing:-1.5px;line-height:1.15;margin-bottom:24px}
+  .h2 .gold{color:var(--gold)}
+  .section-lead{font-size:16px;color:var(--text-2);max-width:600px;line-height:1.7}
+
+  /* HISTORIA */
+  .historia-wrap{display:grid;grid-template-columns:5fr 6fr;gap:60px;align-items:center}
+  .historia-photo{position:relative}
+  .photo-frame{aspect-ratio:4/5;background:linear-gradient(135deg,#1A1A1A 0%,#0A0A0A 100%);border-radius:20px;overflow:hidden;position:relative;border:.5px solid var(--border-2)}
+  .photo-frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-badge{position:absolute;bottom:20px;left:20px;right:20px;background:rgba(0,0,0,.6);backdrop-filter:blur(12px);border:.5px solid rgba(200,148,26,.3);border-radius:12px;padding:12px 16px;z-index:2}
+  .photo-badge-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+  .photo-badge-role{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase}
+  .historia-content h2{margin-bottom:28px}
+  .historia-key{display:flex;flex-direction:column;gap:18px;margin-bottom:32px}
+  .historia-item{display:flex;gap:14px;align-items:flex-start}
+  .historia-num{width:28px;height:28px;border-radius:50%;background:var(--gold-dim);color:var(--gold);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;letter-spacing:.5px}
+  .historia-txt{flex:1;font-size:15px;color:var(--text-2);line-height:1.65}
+  .historia-txt strong{color:var(--text);font-weight:600}
+  .historia-quote{border-left:2px solid var(--gold);padding-left:20px;margin-top:32px}
+  .historia-quote p{font-size:17px;color:var(--text);font-weight:500;line-height:1.5;font-style:italic}
+
+  /* SERVICIOS */
+  .servicio-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:56px}
+  .servicio-card{background:var(--bg-2);border:.5px solid var(--border);border-radius:20px;padding:32px 28px;transition:all .3s;position:relative;overflow:hidden}
+  .servicio-card:hover{border-color:rgba(200,148,26,.4);transform:translateY(-2px)}
+  .servicio-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,148,26,.3),transparent);opacity:0;transition:opacity .3s}
+  .servicio-card:hover::before{opacity:1}
+  .servicio-num{font-size:12px;color:var(--gold);letter-spacing:3px;font-weight:700;margin-bottom:16px}
+  .servicio-title{font-size:20px;font-weight:600;color:var(--text);margin-bottom:12px;letter-spacing:-.3px}
+  .servicio-desc{font-size:14px;color:var(--text-2);line-height:1.65}
+
+  /* COMPARATIVA */
+  .comparativa{margin-top:48px;background:var(--bg-2);border:.5px solid var(--border);border-radius:20px;overflow:hidden;position:relative}
+  .forja-column-bg{position:absolute;top:0;bottom:0;right:0;width:25%;background:linear-gradient(180deg,rgba(200,148,26,.08) 0%,rgba(200,148,26,.04) 100%);pointer-events:none;border-left:.5px solid rgba(200,148,26,.2)}
+  .comp-header{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;padding:20px 24px;border-bottom:.5px solid var(--border);background:rgba(0,0,0,.3);position:relative;z-index:2}
+  .comp-header-cell{font-size:11px;color:var(--text-3);letter-spacing:2px;text-transform:uppercase;font-weight:600;text-align:center}
+  .comp-header-cell:first-child{text-align:left}
+  .comp-header-cell.forja{color:var(--gold);position:relative;font-weight:800}
+  .comp-header-cell.forja::after{content:'★';position:absolute;top:-8px;right:8px;font-size:10px}
+  .comp-row{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;padding:18px 24px;border-bottom:.5px solid var(--border);align-items:center;transition:background .2s;position:relative;z-index:2}
+  .comp-row:last-child{border-bottom:none}
+  .comp-feature{font-size:14px;color:var(--text);font-weight:500}
+  .comp-cell{text-align:center;font-size:13px}
+  .comp-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700}
+  .comp-icon.check{background:rgba(200,148,26,.2);color:var(--gold)}
+  .comp-icon.cross{background:rgba(232,93,93,.15);color:var(--danger)}
+  .comp-icon.partial{background:rgba(200,154,90,.15);color:#C89A5A}
+
+  /* FAQ */
+  .faq{max-width:780px;margin-top:48px}
+  .faq-item{border-bottom:.5px solid var(--border)}
+  .faq-q{display:flex;justify-content:space-between;align-items:center;padding:22px 4px;font-size:15px;font-weight:500;color:var(--text);cursor:pointer;user-select:none;transition:color .2s}
+  .faq-q:hover{color:var(--gold)}
+  .faq-icon{color:var(--gold);font-size:22px;transition:transform .3s;flex-shrink:0;margin-left:20px}
+  .faq-item.open .faq-icon{transform:rotate(45deg)}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s;color:var(--text-2);font-size:14px;line-height:1.7}
+  .faq-item.open .faq-a{max-height:400px;padding:0 4px 22px 4px}
+
+  /* CTA FINAL */
+  .cta-final{text-align:center;padding:140px 24px;position:relative;overflow:hidden}
+  .cta-final::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(200,148,26,.10) 0%,transparent 60%);pointer-events:none}
+  .cta-final-content{position:relative;z-index:2}
+  .cta-title{font-size:clamp(32px,5.5vw,56px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:48px;max-width:780px;margin-left:auto;margin-right:auto}
+  .cta-title .gold{color:var(--gold)}
+  .cta-final .btn-primary{padding:20px 44px;font-size:16px}
+
+  /* FOOTER */
+  footer{padding:32px 24px;text-align:center;border-top:.5px solid var(--border)}
+  .footer-logo{font-size:14px;font-weight:800;letter-spacing:4px;color:var(--gold);margin-bottom:10px}
+  .footer-txt{color:var(--text-3);font-size:11px;letter-spacing:1px}
+  .footer-txt a{color:var(--text-2);text-decoration:none}
+
+  /* ═════════════════════════════════ */
+  /* VISTA AGENDAR — WIZARD */
+  /* ═════════════════════════════════ */
+  .view-agendar{display:none;position:fixed;inset:0;z-index:150;background:var(--bg);overflow-y:auto;opacity:0;transition:opacity .3s var(--ease)}
+  .view-agendar.open{display:block}
+  .view-agendar.visible{opacity:1}
+  .ag-container{max-width:640px;margin:0 auto;padding:80px 24px 80px;transform:translateY(14px);transition:transform .32s var(--ease)}
+  .view-agendar.visible .ag-container{transform:translateY(0)}
+  .ag-back{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--gold);cursor:pointer;border:none;background:none;padding:0;margin-bottom:36px;font-family:inherit;transition:opacity .15s}
+  .ag-back:hover{opacity:.6}
+  .ag-header{margin-bottom:40px}
+  .ag-kicker{font-size:11px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:14px}
+  .ag-h1{font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.15;margin-bottom:16px}
+  .ag-h1 .gold{color:var(--gold)}
+  .ag-sub{font-size:15px;color:var(--text-2);line-height:1.65;max-width:520px}
+
+  /* STEPS DOTS */
+  .steps-dots{display:flex;gap:8px;margin-bottom:40px}
+  .sd{flex:1;height:3px;background:var(--border);border-radius:2px;transition:background .3s}
+  .sd.done{background:var(--gold)}
+  .sd.current{background:var(--gold-hover)}
+
+  /* PASOS */
+  .wstep{display:none}
+  .wstep.wa{display:block;animation:fadeIn .4s var(--ease)}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* CALENDARIO */
+  .cal-wrap{background:var(--bg-2);border:.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .cal-mes{font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.3px}
+  .cal-btn{width:36px;height:36px;border-radius:50%;border:.5px solid var(--border-2);background:var(--bg-3);cursor:pointer;font-size:14px;color:var(--gold);display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:inherit}
+  .cal-btn:hover:not(:disabled){background:var(--gold-dim);border-color:var(--gold)}
+  .cal-btn:disabled{opacity:.3;cursor:not-allowed}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cdl{text-align:center;font-size:10px;color:var(--text-3);padding:6px 0;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+  .cd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;border-radius:8px;transition:all .15s;color:var(--text-2)}
+  .cd.emp{background:transparent}
+  .cd.pas,.cd.blk{color:var(--text-3);opacity:.4;cursor:not-allowed}
+  .cd.av{background:var(--bg-3);color:var(--text);cursor:pointer;font-weight:500;border:.5px solid var(--border-2)}
+  .cd.av:hover{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+  .cd.sel{background:var(--gold);color:#000;font-weight:700;border:.5px solid var(--gold)}
+  .cd.hoy{position:relative}
+  .cd.hoy::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;background:var(--gold);border-radius:50%}
+  .cd.sel.hoy::after{background:#000}
+
+  .cal-legend{display:flex;gap:16px;margin-top:16px;font-size:11px;color:var(--text-3);flex-wrap:wrap}
+  .cal-legend-item{display:flex;align-items:center;gap:6px}
+  .cal-legend-dot{width:10px;height:10px;border-radius:3px}
+  .cal-legend-dot.av{background:var(--bg-3);border:.5px solid var(--border-2)}
+  .cal-legend-dot.sel{background:var(--gold)}
+  .cal-legend-dot.blk{background:var(--bg-3);opacity:.4}
+
+  /* HORARIOS */
+  .fecha-lbl{font-size:13px;color:var(--gold);margin-bottom:16px;font-weight:500;letter-spacing:.3px}
+  .h-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:24px}
+  .hb{background:var(--bg-3);border:.5px solid var(--border-2);border-radius:10px;padding:12px 8px;color:var(--text);cursor:pointer;font-size:13px;transition:all .15s;font-family:inherit;font-weight:500}
+  .hb:hover:not(:disabled){background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+  .hb.sel{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+  .hb.ocup{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+
+  /* FORM INPUTS */
+  .field{margin-bottom:20px}
+  .field-label{display:block;font-size:13px;color:var(--text-2);margin-bottom:8px;font-weight:500}
+  .field-label .opt{color:var(--text-3);font-size:11px;margin-left:6px;font-weight:400}
+  .field-label .req{color:var(--gold)}
+  .input,.select{width:100%;background:var(--bg-3);border:.5px solid var(--border-2);border-radius:10px;padding:14px 16px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+  .input:focus,.select:focus{outline:none;border-color:var(--gold)}
+  .select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8941A' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
+  .select option{background:var(--bg-3);color:var(--text)}
+  .field-row{display:grid;grid-template-columns:1fr 2fr;gap:8px}
+  .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .form-section{background:var(--bg-2);border:.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+  .form-section-title{font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:18px}
+
+  /* CONFIRMACIÓN */
+  .resumen{background:var(--bg-2);border:.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+  .resumen-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:.5px solid var(--border);font-size:14px;gap:16px}
+  .resumen-row:last-child{border-bottom:none}
+  .resumen-label{color:var(--text-3);flex-shrink:0}
+  .resumen-val{color:var(--text);text-align:right;font-weight:500}
+
+  /* SUCCESS */
+  .success-icon{width:80px;height:80px;border-radius:50%;background:var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:36px;border:2px solid var(--gold)}
+  .success-h{text-align:center;margin-bottom:16px}
+  .success-h .gold{color:var(--gold)}
+  .success-sub{text-align:center;color:var(--text-2);font-size:15px;line-height:1.6;margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto}
+  .success-details{background:var(--bg-2);border:.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px}
+  .success-back{text-align:center}
+
+  .error-msg{background:rgba(232,93,93,.1);border:.5px solid rgba(232,93,93,.3);color:#FF8080;padding:14px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;line-height:1.6}
+
+  .btn-secondary{background:transparent;color:var(--text-2);border:.5px solid var(--border-2);padding:14px 24px;border-radius:40px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s}
+  .btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+
+  .actions{display:flex;gap:12px;margin-top:24px;justify-content:space-between;flex-wrap:wrap}
+
+  /* SCARCITY BANNER */
+  .scarcity-banner{background:linear-gradient(135deg,var(--bg-2),var(--bg-3));border:.5px solid var(--border);border-left:3px solid var(--gold);border-radius:12px;padding:16px 20px;margin-bottom:32px;display:flex;align-items:center;gap:14px}
+  .scarcity-icon{width:36px;height:36px;background:var(--gold-dim);color:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+  .scarcity-txt{font-size:13px;color:var(--text-2);line-height:1.5}
+  .scarcity-txt strong{color:var(--gold)}
+
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    .historia-wrap{grid-template-columns:1fr;gap:40px}
+    .historia-photo{max-width:340px;margin:0 auto;width:100%}
+    .servicio-grid{grid-template-columns:1fr}
+    .comp-header,.comp-row{grid-template-columns:1.4fr 1fr 1fr 1.1fr;padding:14px 12px;gap:4px}
+    .comp-header-cell{font-size:9px;letter-spacing:1px}
+    .comp-feature{font-size:12px}
+    .comp-cell{font-size:11px}
+    section{padding:70px 0}
+  }
+  @media(max-width:640px){
+    .container{padding:0 20px}
+    .hero{padding:90px 20px 50px}
+    .btn-primary{padding:15px 26px;font-size:14px}
+    .servicio-card{padding:26px 22px}
+    .comp-header{display:none}
+    .forja-column-bg{display:none}
+    .comp-row{grid-template-columns:1fr;padding:16px;gap:8px;text-align:left;border-bottom:.5px solid var(--border)}
+    .comp-feature{font-size:14px;color:var(--gold);margin-bottom:6px;font-weight:600}
+    .comp-cell{text-align:left;display:flex;justify-content:space-between;padding:4px 0}
+    .comp-cell::before{content:attr(data-label);color:var(--text-3);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+    .nav-logo img{height:36px}
+    .ag-container{padding:70px 20px 60px}
+    .field-row{grid-template-columns:1fr}
+    .h-grid{grid-template-columns:repeat(3,1fr)}
+    .resumen-row{flex-direction:column;gap:4px}
+    .resumen-val{text-align:left}
+    .actions{flex-direction:column-reverse}
+    .actions .btn-primary,.actions .btn-secondary{width:100%;justify-content:center;text-align:center}
+  }
+  @media(max-width:400px){
+    .hero-title{font-size:32px;letter-spacing:-1px}
+    .h2{font-size:26px}
+  }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login-scr">
-  <div class="lcard">
-    <div class="llogo">Silvia Busquets</div>
-    <p class="lsub">Panel de administración</p>
-    <input type="email" id="inp-lemail" placeholder="sabnosti@hotmail.com" onkeydown="if(event.key==='Enter')document.getElementById('inp-lpass').focus()">
-    <input type="password" id="inp-lpass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
-    <button class="lbtn" onclick="login()">Entrar</button>
-    <p class="lerr" id="lerr">Correo o contraseña incorrectos</p>
-    <p class="linfo">Acceso exclusivo para Silvia Busquets.<br>Intentos fallidos quedan bloqueados automáticamente.</p>
+<nav id="nav">
+  <div class="container nav-inner">
+    <a class="nav-logo" onclick="goHome(event)" href="#">
+      <img src="FORJA%20logo%20oro%20fondo%20negro.png" alt="FORJA">
+    </a>
+    <button class="nav-cta" onclick="openAgendar()">Agendar reunión</button>
   </div>
-</div>
+</nav>
 
-<!-- PANEL -->
-<div id="panel">
-  <div class="topbar">
-    <span class="tlogo">Panel · Silvia Busquets</span>
-    <div class="tright">
-      <span class="bpend" id="badge-pend" style="display:none;"></span>
-      <button class="logoutbtn" onclick="logout()">Salir</button>
-    </div>
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Solo 10 lugares</div>
+    <h1 class="hero-title">El plan que ninguna <span class="gold">academia</span> te puede dar.</h1>
+    <p class="hero-sub">Entrenamiento de fútbol 100% personalizado para tu posición, tu entorno y tu nivel.</p>
+    <button class="btn-primary" onclick="openAgendar()">Agendar reunión <span class="arrow">→</span></button>
   </div>
-  <div class="pinner">
-    <div class="ptit">Bienvenida, Silvia</div>
-    <p class="psub">Gestiona tus reservas, bloqueos y configuración.</p>
-    <div class="sgrid" id="sgrid"></div>
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('pendientes')">Pendientes <span id="cnt-pend"></span></button>
-      <button class="tab" onclick="showTab('confirmadas')">Confirmadas</button>
-      <button class="tab" onclick="showTab('calendario')">Calendario</button>
-      <button class="tab" onclick="showTab('historial')">Historial</button>
-      <button class="tab" onclick="showTab('bloqueos')">Bloqueos y descansos</button>
-      <button class="tab" onclick="showTab('config')">Configuración</button>
-    </div>
-    <div class="tc active" id="tc-pendientes"></div>
-    <div class="tc" id="tc-confirmadas"></div>
-    <div class="tc" id="tc-calendario"></div>
-    <div class="tc" id="tc-historial"></div>
-    <div class="tc" id="tc-bloqueos"></div>
-    <div class="tc" id="tc-config"></div>
-  </div>
-</div>
+</section>
 
-<!-- MODAL CONFIRMACIÓN -->
-<div class="mbg" id="m-conf">
-  <div class="modal">
-    <h3>Confirmar pago recibido</h3>
-    <p>¿Confirmas que recibiste la transferencia de <strong>$500 MXN</strong> de <strong id="mc-nom"></strong>?</p>
-    <p style="font-size:13px;color:var(--ca2);">Al confirmar, se enviará automáticamente el correo de preparación a la clienta.</p>
-    <div class="macts">
-      <button class="mbpr" onclick="ejecutarConf()">✓ Sí, confirmar sesión</button>
-      <button class="mbsc" onclick="cerrarM()">Cancelar</button>
+<!-- HISTORIA -->
+<section id="historia">
+  <div class="container">
+    <div class="historia-wrap">
+      <div class="historia-photo">
+        <div class="photo-frame">
+          <img src="pablo%20foto%20espaldas%20futbol.JPG" alt="Pablo Mata Busquets">
+          <div class="photo-badge">
+            <div class="photo-badge-name">Pablo Mata Busquets</div>
+            <div class="photo-badge-role">Fundador FORJA</div>
+          </div>
+        </div>
+      </div>
+      <div class="historia-content">
+        <div class="eyebrow">Quién está detrás</div>
+        <h2 class="h2">Firmé contrato con <span class="gold">Toluca</span> a los 17.</h2>
+        <div class="historia-key">
+          <div class="historia-item">
+            <div class="historia-num">01</div>
+            <div class="historia-txt"><strong>Fuerzas Básicas Toluca.</strong> Torneo Sub-17 vs Atlético de Madrid, Feyenoord, Inter Miami.</div>
+          </div>
+          <div class="historia-item">
+            <div class="historia-num">02</div>
+            <div class="historia-txt"><strong>Un año después</strong> me dieron las gracias. No por mi nivel — por lo mental y lo técnico que nadie me enseñó a trabajar solo.</div>
+          </div>
+          <div class="historia-item">
+            <div class="historia-num">03</div>
+            <div class="historia-txt"><strong>Franklin Pierce University.</strong> División 2 NCAA. Sigo en el proceso.</div>
+          </div>
+        </div>
+        <div class="historia-quote">
+          <p>Creé FORJA para darte lo que yo nunca tuve.</p>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- MODAL CANCELACIÓN -->
-<div class="mbg" id="m-canc">
-  <div class="modal">
-    <h3>Cancelar reserva</h3>
-    <p>¿Confirmas cancelar la reserva de <strong id="mcanc-nom"></strong>? El horario quedará libre y le avisaré por correo.</p>
-    <div class="macts">
-      <button class="mbpr" style="background:#c0392b;" onclick="ejecutarCanc()">Sí, cancelar</button>
-      <button class="mbsc" onclick="cerrarM()">No, regresar</button>
+<!-- QUÉ ES -->
+<section id="que-es">
+  <div class="container">
+    <div class="eyebrow">Qué es FORJA</div>
+    <h2 class="h2">Un plan que cambia contigo <span class="gold">cada mes.</span></h2>
+    <p class="section-lead">Todo lo que tu equipo no trabaja individualmente contigo — lo trabajamos nosotros.</p>
+    <div class="servicio-grid">
+      <div class="servicio-card">
+        <div class="servicio-num">01</div>
+        <div class="servicio-title">Técnica personalizada</div>
+        <div class="servicio-desc">Ejercicios diseñados para tu posición. Adaptados a lo que tienes: pared, conos, patio o cancha.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-num">02</div>
+        <div class="servicio-title">Preparación mental</div>
+        <div class="servicio-desc">Nervios, presión, errores. Lo que te bloquea en los partidos lo trabajamos desde el día uno.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-num">03</div>
+        <div class="servicio-title">Táctica por posición</div>
+        <div class="servicio-desc">Entiende tu rol como un profesional. Movimientos, decisiones y lectura del juego específicas para ti.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-num">04</div>
+        <div class="servicio-title">Acompañamiento directo</div>
+        <div class="servicio-desc">WhatsApp abierto · Llamada mensual · Preparación específica para visorias.</div>
+      </div>
     </div>
+  </div>
+</section>
+
+<!-- COMPARATIVA -->
+<section id="diferencia">
+  <div class="container">
+    <div class="eyebrow">Por qué FORJA</div>
+    <h2 class="h2">No es una academia. No es <span class="gold">YouTube.</span></h2>
+    <p class="section-lead">Es alguien que vivió lo que tú vives ahora, trabajando exclusivamente contigo.</p>
+    <div class="comparativa">
+      <div class="forja-column-bg"></div>
+      <div class="comp-header">
+        <div class="comp-header-cell">Beneficio</div>
+        <div class="comp-header-cell">Academia</div>
+        <div class="comp-header-cell">YouTube</div>
+        <div class="comp-header-cell forja">FORJA</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-feature">Personalizado a tu posición</div>
+        <div class="comp-cell" data-label="Academia"><span class="comp-icon cross">✕</span></div>
+        <div class="comp-cell" data-label="YouTube"><span class="comp-icon partial">~</span></div>
+        <div class="comp-cell" data-label="FORJA"><span class="comp-icon check">✓</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-feature">Adaptado a tu entorno</div>
+        <div class="comp-cell" data-label="Academia"><span class="comp-icon cross">✕</span></div>
+        <div class="comp-cell" data-label="YouTube"><span class="comp-icon cross">✕</span></div>
+        <div class="comp-cell" data-label="FORJA"><span class="comp-icon check">✓</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-feature">Seguimiento mensual</div>
+        <div class="comp-cell" data-label="Academia"><span class="comp-icon partial">~</span></div>
+        <div class="comp-cell" data-label="YouTube"><span class="comp-icon cross">✕</span></div>
+        <div class="comp-cell" data-label="FORJA"><span class="comp-icon check">✓</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-feature">Preparación mental</div>
+        <div class="comp-cell" data-label="Academia"><span class="comp-icon partial">~</span></div>
+        <div class="comp-cell" data-label="YouTube"><span class="comp-icon cross">✕</span></div>
+        <div class="comp-cell" data-label="FORJA"><span class="comp-icon check">✓</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-feature">Coach con experiencia real</div>
+        <div class="comp-cell" data-label="Academia"><span class="comp-icon partial">~</span></div>
+        <div class="comp-cell" data-label="YouTube"><span class="comp-icon cross">✕</span></div>
+        <div class="comp-cell" data-label="FORJA"><span class="comp-icon check">✓</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="eyebrow">Preguntas frecuentes</div>
+    <h2 class="h2">Lo que probablemente <span class="gold">te estás preguntando.</span></h2>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Para qué edades es FORJA?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Para jugadores entre 10 y 16 años que ya están en un equipo o club amateur y quieren llegar a fuerzas básicas o un club profesional.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Cuánto cuesta?<span class="faq-icon">+</span></div>
+        <div class="faq-a">El precio y detalles del programa se explican en la reunión con tu familia. Es un programa premium con cupos limitados — primero queremos conocerte y ver si es el ajuste correcto.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Qué incluye cada mes?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Plan de ejercicios técnicos semana por semana, guía mental del mes, conceptos tácticos por posición, WhatsApp directo, llamada mensual de 30 minutos, guía nutricional y preparación para visorias cuando aplique.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Necesito material especial?<span class="faq-icon">+</span></div>
+        <div class="faq-a">No. El plan se adapta 100% a lo que tienes disponible. Con un balón podemos trabajar. Si tienes conos, escalera o pared, aprovechamos eso.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Trabajan la parte física?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Nos enfocamos en técnica, táctica y mentalidad — lo que tu equipo no trabaja contigo específicamente. Lo físico ya lo trabajas en tu equipo.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Cómo son las clases?<span class="faq-icon">+</span></div>
+        <div class="faq-a">FORJA no es un servicio de clases en vivo. Es acompañamiento — te entrego el plan semanal con videos, entrenas a tu ritmo, y yo te acompaño con feedback continuo por WhatsApp y llamada mensual.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">¿Cómo empiezo?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Agenda una reunión gratuita conmigo y tu familia. Te explico todo, resolvemos dudas y decidimos juntos si FORJA es lo correcto. Sin compromiso.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="agendar-section" class="cta-final">
+  <div class="cta-final-content">
+    <h2 class="cta-title">Solo trabajo con <span class="gold">10 jugadores</span> a la vez.</h2>
+    <button class="btn-primary" onclick="openAgendar()">Agendar mi reunión <span class="arrow">→</span></button>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">FORJA</div>
+  <div class="footer-txt">© 2026 · <a href="https://instagram.com/forja_futbol" target="_blank">@forja_futbol</a></div>
+</footer>
+
+<!-- ═════════════════════════════════ -->
+<!-- VISTA AGENDAR -->
+<!-- ═════════════════════════════════ -->
+<div class="view-agendar" id="view-agendar">
+  <div class="ag-container">
+
+    <button class="ag-back" onclick="backAgendar()" id="ag-back-btn">
+      <span>←</span> Regresar
+    </button>
+
+    <div class="ag-header">
+      <div class="ag-kicker">Reunión de presentación</div>
+      <h1 class="ag-h1">Agenda una llamada <span class="gold">con tu familia.</span></h1>
+      <p class="ag-sub">30 minutos por Google Meet. Sin compromiso. Te explico todo el programa, resolvemos dudas y decidimos juntos si FORJA es el ajuste correcto.</p>
+    </div>
+
+    <div class="scarcity-banner">
+      <div class="scarcity-icon">⚡</div>
+      <div class="scarcity-txt">Solo trabajo con <strong>10 jugadores</strong> a la vez para garantizar personalización total. Los lugares se llenan rápido.</div>
+    </div>
+
+    <div class="steps-dots">
+      <div class="sd current" id="sd1"></div>
+      <div class="sd" id="sd2"></div>
+      <div class="sd" id="sd3"></div>
+      <div class="sd" id="sd4"></div>
+    </div>
+
+    <!-- PASO 1: FECHA -->
+    <div class="wstep wa" id="wstep-1">
+      <div class="form-section-title">Paso 1 · Elige la fecha</div>
+      <div class="cal-wrap">
+        <div class="cal-nav">
+          <button class="cal-btn" onclick="cambiarMes(-1)" id="cal-prev">‹</button>
+          <div class="cal-mes" id="cal-mes"></div>
+          <button class="cal-btn" onclick="cambiarMes(1)" id="cal-next">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <div class="cal-legend-item"><div class="cal-legend-dot av"></div><span>Disponible</span></div>
+          <div class="cal-legend-item"><div class="cal-legend-dot sel"></div><span>Seleccionado</span></div>
+          <div class="cal-legend-item"><div class="cal-legend-dot blk"></div><span>No disponible</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <div></div>
+        <button class="btn-primary" onclick="agPaso(2)" id="btn-ag2" disabled>Siguiente <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- PASO 2: HORARIO -->
+    <div class="wstep" id="wstep-2">
+      <div class="form-section-title">Paso 2 · Elige la hora</div>
+      <div class="fecha-lbl" id="fecha-lbl"></div>
+      <div class="h-grid" id="h-grid"></div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="agPaso(1)">← Cambiar fecha</button>
+        <button class="btn-primary" onclick="agPaso(3)" id="btn-ag3" disabled>Siguiente <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- PASO 3: DATOS -->
+    <div class="wstep" id="wstep-3">
+      <div class="form-section-title">Paso 3 · Tus datos</div>
+
+      <div class="form-section">
+        <div class="form-section-title" style="margin-bottom:14px">Datos del tutor</div>
+        <div class="field">
+          <label class="field-label">Tu nombre completo <span class="req">*</span></label>
+          <input class="input" id="inp-nom-tutor" type="text" placeholder="Ej. María Ramírez" oninput="validarPaso3()">
+        </div>
+        <div class="field">
+          <label class="field-label">Tu correo electrónico <span class="req">*</span></label>
+          <input class="input" id="inp-email-tutor" type="email" placeholder="tu@correo.com" oninput="validarPaso3()">
+        </div>
+        <div class="field">
+          <label class="field-label">Tu WhatsApp <span class="req">*</span></label>
+          <div class="field-row">
+            <select class="select" id="inp-lada-tutor">
+              <option value="+52">🇲🇽 +52</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+34">🇪🇸 +34</option>
+              <option value="+54">🇦🇷 +54</option>
+              <option value="+57">🇨🇴 +57</option>
+              <option value="+56">🇨🇱 +56</option>
+              <option value="+51">🇵🇪 +51</option>
+              <option value="+58">🇻🇪 +58</option>
+              <option value="+593">🇪🇨 +593</option>
+              <option value="+591">🇧🇴 +591</option>
+              <option value="+595">🇵🇾 +595</option>
+              <option value="+598">🇺🇾 +598</option>
+              <option value="+506">🇨🇷 +506</option>
+              <option value="+502">🇬🇹 +502</option>
+              <option value="+503">🇸🇻 +503</option>
+              <option value="+504">🇭🇳 +504</option>
+              <option value="+505">🇳🇮 +505</option>
+              <option value="+507">🇵🇦 +507</option>
+              <option value="+53">🇨🇺 +53</option>
+              <option value="+1-DO">🇩🇴 +1</option>
+              <option value="+1-PR">🇵🇷 +1</option>
+            </select>
+            <input class="input" id="inp-tel-tutor" type="tel" placeholder="10 dígitos" oninput="validarPaso3()">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title" style="margin-bottom:14px">Datos del jugador</div>
+        <div class="field">
+          <label class="field-label">Nombre del jugador <span class="req">*</span></label>
+          <input class="input" id="inp-nom-jugador" type="text" placeholder="Ej. Diego Ramírez" oninput="validarPaso3()">
+        </div>
+        <div class="field">
+          <label class="field-label">Fecha de nacimiento del jugador <span class="req">*</span></label>
+          <div class="field-row-3">
+            <select class="select" id="inp-dia-jugador" onchange="validarPaso3()">
+              <option value="">Día</option>
+            </select>
+            <select class="select" id="inp-mes-jugador" onchange="validarPaso3()">
+              <option value="">Mes</option>
+              <option value="01">Enero</option><option value="02">Febrero</option>
+              <option value="03">Marzo</option><option value="04">Abril</option>
+              <option value="05">Mayo</option><option value="06">Junio</option>
+              <option value="07">Julio</option><option value="08">Agosto</option>
+              <option value="09">Septiembre</option><option value="10">Octubre</option>
+              <option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+            <select class="select" id="inp-anio-jugador" onchange="validarPaso3()">
+              <option value="">Año</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Posición del jugador <span class="req">*</span></label>
+          <select class="select" id="inp-pos-jugador" onchange="validarPaso3()">
+            <option value="">Selecciona una posición</option>
+            <option value="DC">Defensa Central</option>
+            <option value="LD">Lateral Derecho</option>
+            <option value="LI">Lateral Izquierdo</option>
+            <option value="MCD">Mediocampista Defensivo</option>
+            <option value="MC">Mediocampista Central</option>
+            <option value="MCO">Mediocampista Ofensivo / Enganche</option>
+            <option value="ED">Extremo Derecho</option>
+            <option value="EI">Extremo Izquierdo</option>
+            <option value="DLC">Delantero Centro</option>
+            <option value="POR">Portero</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Correo del jugador <span class="opt">opcional</span></label>
+          <input class="input" id="inp-email-jugador" type="email" placeholder="correo del jugador (si tiene)">
+        </div>
+        <div class="field">
+          <label class="field-label">WhatsApp del jugador <span class="opt">recomendado</span></label>
+          <div class="field-row">
+            <select class="select" id="inp-lada-jugador">
+              <option value="+52">🇲🇽 +52</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+34">🇪🇸 +34</option>
+              <option value="+54">🇦🇷 +54</option>
+              <option value="+57">🇨🇴 +57</option>
+              <option value="+56">🇨🇱 +56</option>
+              <option value="+51">🇵🇪 +51</option>
+              <option value="+58">🇻🇪 +58</option>
+              <option value="">Otro</option>
+            </select>
+            <input class="input" id="inp-tel-jugador" type="tel" placeholder="opcional">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">¿Cómo nos encontraste? <span class="req">*</span></label>
+          <select class="select" id="inp-fuente" onchange="validarPaso3()">
+            <option value="">Elige una opción</option>
+            <option value="Instagram">Instagram</option>
+            <option value="TikTok">TikTok</option>
+            <option value="Referido">Un referido</option>
+            <option value="Google">Google</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-secondary" onclick="agPaso(2)">← Cambiar hora</button>
+        <button class="btn-primary" onclick="agPaso(4)" id="btn-ag4" disabled>Revisar reserva <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- PASO 4: CONFIRMAR -->
+    <div class="wstep" id="wstep-4">
+      <div class="form-section-title">Paso 4 · Confirma tu reserva</div>
+      <div class="resumen">
+        <div class="resumen-row"><span class="resumen-label">Fecha</span><span class="resumen-val" id="res-fecha"></span></div>
+        <div class="resumen-row"><span class="resumen-label">Hora</span><span class="resumen-val" id="res-hora"></span></div>
+        <div class="resumen-row"><span class="resumen-label">Tutor</span><span class="resumen-val" id="res-tutor"></span></div>
+        <div class="resumen-row"><span class="resumen-label">Correo</span><span class="resumen-val" id="res-email"></span></div>
+        <div class="resumen-row"><span class="resumen-label">Jugador</span><span class="resumen-val" id="res-jugador"></span></div>
+        <div class="resumen-row"><span class="resumen-label">Posición</span><span class="resumen-val" id="res-pos"></span></div>
+      </div>
+      <div id="error-reserva"></div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="agPaso(3)">← Editar datos</button>
+        <button class="btn-primary" id="btn-confirmar" onclick="confirmarReserva()">Confirmar reunión <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- PASO 5: ÉXITO -->
+    <div class="wstep" id="wstep-5">
+      <div class="success-icon">✓</div>
+      <h2 class="h2 success-h">Reunión <span class="gold">confirmada.</span></h2>
+      <p class="success-sub">Te enviamos un correo de confirmación con todos los detalles. El link de Google Meet te llegará por WhatsApp el día de la reunión.</p>
+      <div class="success-details">
+        <div class="resumen-row"><span class="resumen-label">Fecha</span><span class="resumen-val" id="ok-fecha"></span></div>
+        <div class="resumen-row"><span class="resumen-label">Hora</span><span class="resumen-val" id="ok-hora"></span></div>
+        <div class="resumen-row"><span class="resumen-label">Correo</span><span class="resumen-val" id="ok-email"></span></div>
+      </div>
+      <div class="success-back">
+        <button class="btn-secondary" onclick="closeAgendar()">Regresar al inicio</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
-const SUPA_URL = 'https://axdwfaetbhizdfjnoeib.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4ZHdmYWV0YmhpemRmam5vZWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5MzE5MDQsImV4cCI6MjA5ODUwNzkwNH0.gvQM_PCIxZMjgYqaaiFMK1PFR21TT7A52nueygIyKeE';
+// ═══════════════════════════════════════════
+// FORJA — Sistema de agenda con Supabase
+// ═══════════════════════════════════════════
+
+const SUPA_URL = 'https://nkobqncsshfwcftqkyuu.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rb2JxbmNzc2hmd2NmdHFreXV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0OTk5MDYsImV4cCI6MjEwMDA3NTkwNn0.IWzxTBiWHL6A7TlbWLMTEs4zqCeHMzayryyIqFcn_us';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// ── AUTH CON SUPABASE ──
-async function login() {
-  const email = document.getElementById('inp-lemail').value.trim();
-  const pass = document.getElementById('inp-lpass').value;
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if(error) {
-    document.getElementById('lerr').style.display = 'block';
+// ─── NAV SCROLL ───
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll', () => navEl.classList.toggle('scrolled', scrollY > 40), {passive:true});
+
+// ─── VISTA AGENDAR ───
+const homeSection = document.getElementById('home');
+const viewAg = document.getElementById('view-agendar');
+let isAgendarOpen = false;
+let agPasoN = 1;
+
+function openAgendar(e) {
+  if(e) e.preventDefault();
+  isAgendarOpen = true;
+  document.body.style.overflow = 'hidden';
+  viewAg.classList.add('open');
+  viewAg.scrollTop = 0;
+  agPasoN = 1;
+  mostrarPaso(1);
+  cargarDatos();
+  requestAnimationFrame(() => requestAnimationFrame(() => viewAg.classList.add('visible')));
+  window.history.pushState({view:'agendar'}, '', '#agendar');
+}
+
+function closeAgendar() {
+  isAgendarOpen = false;
+  viewAg.classList.remove('visible');
+  setTimeout(() => {
+    viewAg.classList.remove('open');
+    document.body.style.overflow = '';
+    if(location.hash === '#agendar') window.history.replaceState({}, '', location.pathname);
+  }, 300);
+}
+
+function goHome(e) {
+  if(e) e.preventDefault();
+  if(isAgendarOpen) closeAgendar();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function backAgendar() {
+  if(agPasoN > 1) {
+    mostrarPaso(agPasoN - 1);
   } else {
-    mostrarPanel();
+    closeAgendar();
   }
 }
 
-async function logout() {
-  await sb.auth.signOut();
-  location.reload();
+// Manejar botón "atrás" del navegador
+window.addEventListener('popstate', () => {
+  if(isAgendarOpen) closeAgendar();
+});
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && isAgendarOpen) closeAgendar();
+});
+
+// ─── CONFIG Y DATOS DESDE SUPABASE ───
+let cfg = {
+  horarios_disponibles: ['16:00','17:00','18:00','19:00','20:00'],
+  horarios_por_dia: null,
+  dias_disponibles: [1,2,3,4,5],
+  anticipacion_dias: 1,
+  max_dias_adelante: 14,
+  zona_horaria: 'America/Mexico_City'
+};
+let slotsOcupados = [];
+let bloqueos = [];
+
+async function cargarDatos() {
+  try {
+    const [cfgRes, reservasRes, bloqueosRes] = await Promise.all([
+      sb.from('configuracion').select('*').single(),
+      sb.from('reservas').select('fecha,hora').in('estado', ['pendiente','confirmada']),
+      sb.from('bloqueos').select('*')
+    ]);
+    if(cfgRes.data) cfg = {...cfg, ...cfgRes.data};
+    if(reservasRes.data) slotsOcupados = reservasRes.data.map(r => r.fecha + '|' + r.hora);
+    if(bloqueosRes.data) bloqueos = bloqueosRes.data;
+    renderCal();
+  } catch(err) {
+    console.error('Error cargando datos:', err);
+    renderCal();
+  }
 }
 
-async function checkSession() {
-  const { data } = await sb.auth.getSession();
-  if(data?.session) mostrarPanel();
-}
-
-function mostrarPanel() {
-  document.getElementById('login-scr').style.display = 'none';
-  document.getElementById('panel').style.display = 'block';
-  initPanel();
-}
-
-// ── HELPERS ──
+// ─── CALENDARIO ───
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const DIASN = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-function isoF(d) { return typeof d === 'string' ? d : d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function fLarga(f) {
-  const d = new Date(f + 'T12:00:00');
-  return DIASN[d.getDay()]+', '+d.getDate()+' de '+MESES[d.getMonth()].toLowerCase()+' '+d.getFullYear();
+const DIAS_L = ['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
+let mesActual = new Date(); mesActual.setDate(1);
+let fechaSel = null, horaSel = null;
+
+function isoF(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 
-// ── INIT PANEL ──
-let reservas = [], bloqueos = [], cfg = {};
-let reservaActiva = null;
-let tipoBloqueo = 'rango';
-// horariosPorDia: {0:[...], 1:[...], ...} — horarios independientes por día
-let diasSel = [];
-let horariosPorDia = {}; // estructura nueva
-const DIASN_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-
-async function initPanel() {
-  // Limpiar expiradas en Supabase (el cron lo hace automático, esto es por si acaso)
-  await sb.rpc('limpiar_expiradas_manual');
-  await Promise.all([cargarReservas(), cargarBloqueos(), cargarCfg()]);
-  renderStats();
-  renderPendientes();
-  renderConfirmadas();
-  renderHistorial();
-  renderBloqueos();
-  renderConfig();
-  // Limpiar expiradas
-  await sb.from('reservas').update({estado:'expirada'})
-    .eq('estado','pendiente')
-    .lt('created_at', new Date(Date.now() - 86400000).toISOString());
+function fechaLarga(d) {
+  const ds = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  return ds[d.getDay()] + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()].toLowerCase() + ' ' + d.getFullYear();
 }
 
-async function cargarReservas() {
-  const { data } = await sb.from('reservas').select('*').order('fecha').order('hora');
-  reservas = data || [];
-}
-async function cargarBloqueos() {
-  const { data } = await sb.from('bloqueos').select('*').order('created_at', {ascending:false});
-  bloqueos = data || [];
-}
-async function cargarCfg() {
-  const { data } = await sb.from('configuracion').select('*').single();
-  if(data) {
-    cfg = data;
-    diasSel = [...(cfg.dias_disponibles||[1,2,3,4,5,6])];
-    if(cfg.horarios_por_dia) {
-      horariosPorDia = cfg.horarios_por_dia;
-    } else {
-      const hViejo = cfg.horarios_disponibles || ['09:00','11:00','13:00','15:00','17:00','19:00'];
-      horariosPorDia = {};
-      [0,1,2,3,4,5,6].forEach(d => { horariosPorDia[d] = [...hViejo]; });
-    }
-  }
-}
-
-function renderStats() {
-  const pend = reservas.filter(r=>r.estado==='pendiente').length;
-  const conf = reservas.filter(r=>r.estado==='confirmada').length;
-  const ing = conf * 500;
-  const bl = bloqueos.filter(b => {
-    const hoy = isoF(new Date());
-    if(b.tipo==='rango') return b.hasta >= hoy;
-    if(b.tipo==='dia') return b.fecha >= hoy;
-    if(b.tipo==='slot') return b.fecha >= hoy;
-    return true;
-  }).length;
-  document.getElementById('sgrid').innerHTML = `
-    <div class="scard"><div class="slbl">Pendientes</div><div class="snum">${pend}</div></div>
-    <div class="scard"><div class="slbl">Confirmadas</div><div class="snum">${conf}</div></div>
-    <div class="scard"><div class="slbl">Ingresos</div><div class="snum" style="font-size:22px;">$${ing.toLocaleString()}</div></div>
-    <div class="scard"><div class="slbl">Bloqueos activos</div><div class="snum">${bl}</div></div>
-  `;
-  const b = document.getElementById('badge-pend');
-  b.style.display = pend > 0 ? '' : 'none';
-  if(pend > 0) b.textContent = pend + ' pendiente' + (pend > 1 ? 's' : '');
-  document.getElementById('cnt-pend').textContent = pend > 0 ? '(' + pend + ')' : '';
-}
-
-function renderPendientes() {
-  const rs = reservas.filter(r=>r.estado==='pendiente');
-  const el = document.getElementById('tc-pendientes');
-  if(!rs.length) { el.innerHTML = '<div class="empty"><span>⏳</span>No hay reservas pendientes.</div>'; return; }
-  el.innerHTML = rs.map(r => `
-    <div class="rcard">
-      <div class="rtop">
-        <div class="rinfo">
-          <h3>${r.nombre}</h3>
-          <div class="rfecha">📅 ${r.fecha_larga} · ${r.hora} hrs</div>
-          <div class="rcon">📧 <a href="mailto:${r.email}">${r.email}</a> &nbsp;·&nbsp; 📞 ${r.tel}</div>
-          ${r.concepto_pago ? `<div style="margin-top:6px;background:#fff8ec;border:1px solid #f0d070;border-radius:6px;padding:5px 10px;font-size:12px;color:#c17f0a;">Concepto esperado: <strong style="font-family:monospace;letter-spacing:1px;">${r.concepto_pago}</strong></div>` : ''}
-          <div class="rts">Reservó: ${new Date(r.created_at).toLocaleDateString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
-        </div>
-        <span class="badge bp">Pendiente de pago</span>
-      </div>
-      <div class="ract">
-        <button class="bsm bcf" onclick="abrirConf('${r.id}')">✓ Confirmar pago recibido</button>
-        <button class="bsm bcx" onclick="abrirCanc('${r.id}')">✕ Cancelar</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderConfirmadas() {
-  const rs = reservas.filter(r=>r.estado==='confirmada');
-  const el = document.getElementById('tc-confirmadas');
-  if(!rs.length) { el.innerHTML = '<div class="empty"><span>✅</span>No hay sesiones confirmadas aún.</div>'; return; }
-  el.innerHTML = rs.map(r => `
-    <div class="rcard">
-      <div class="rtop">
-        <div class="rinfo">
-          <h3>${r.nombre}</h3>
-          <div class="rfecha">📅 ${r.fecha_larga} · ${r.hora} hrs</div>
-          <div class="rcon">📧 <a href="mailto:${r.email}">${r.email}</a> &nbsp;·&nbsp; 📞 ${r.tel}</div>
-        </div>
-        <span class="badge bc">✓ Confirmada</span>
-      </div>
-      <div class="ract">
-        <button class="bsm bem" onclick="reenviar('${r.id}')">📧 Reenviar guía</button>
-        <button class="bsm bcx" onclick="abrirCanc('${r.id}')">✕ Cancelar sesión</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderHistorial() {
-  const rs = reservas.filter(r=>['cancelada','expirada'].includes(r.estado)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
-  const el = document.getElementById('tc-historial');
-  if(!rs.length) { el.innerHTML = '<div class="empty"><span>📋</span>El historial está vacío.</div>'; return; }
-  el.innerHTML = rs.map(r => `
-    <div class="rcard" style="opacity:.65;">
-      <div class="rtop">
-        <div class="rinfo">
-          <h3>${r.nombre}</h3>
-          <div class="rfecha">📅 ${r.fecha_larga} · ${r.hora} hrs</div>
-          <div class="rcon">${r.email} · ${r.tel}</div>
-        </div>
-        <span class="badge bx">${r.estado==='expirada'?'No pagó (24h)':'Cancelada'}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ── EMAIL CONFIRMACIÓN ──
-function emailConf(r) {
-  return `Hola ${r.nombre},\n\n¡Tu sesión de angeloterapia está confirmada! 🌿\n\n📅 Fecha: ${r.fecha_larga}\n🕐 Hora: ${r.hora} hrs\n📞 Silvia te llamará a ${r.tel}\n⏱ Duración: 1 a 2 horas aprox.\n\n─────────────────────\nGUÍA DE PREPARACIÓN\n─────────────────────\n\n✦ Un lugar tranquilo, sin interrupciones\n✦ Teléfono con buena señal y batería cargada\n✦ Un vaso de agua simple a la mano\n✦ Una esencia o aceite aromático que te guste\n✦ Llega receptiva y con mente abierta 🙏\n\nAntes de la sesión envíame:\n→ Tu nombre completo como aparece en tu acta de nacimiento\n→ Tu fecha de nacimiento completa (día, mes y año)\n\n─────────────────────\n\n¿Dudas? Escríbeme: @silvia_busquets_n en Instagram\n\nCon cariño,\nSilvia Busquets · Angeloterapeuta\nsabnosti@hotmail.com`;
-}
-
-function abrirConf(id) {
-  reservaActiva = reservas.find(r=>r.id===id);
-  if(!reservaActiva) return;
-  document.getElementById('mc-nom').textContent = reservaActiva.nombre;
-  document.getElementById('m-conf').classList.add('open');
-}
-
-async function ejecutarConf() {
-  const r = reservaActiva; if(!r) return;
-  const btn = document.querySelector('#m-conf .mbpr');
-  btn.disabled = true; btn.textContent = 'Confirmando...';
-  await sb.from('reservas').update({estado:'confirmada'}).eq('id', r.id);
-  // El trigger de Supabase manda el correo automáticamente vía Resend
-  cerrarM();
-  await cargarReservas();
-  renderStats(); renderPendientes(); renderConfirmadas();
-  showTab('confirmadas');
-}
-
-function reenviar(id) {
-  const r = reservas.find(x=>x.id===id); if(!r) return;
-  sb.rpc('enviar_confirmacion', { reserva_id: r.id })
-    .then(() => alert('Correo reenviado a ' + r.email))
-    .catch(() => alert('Hubo un error al reenviar. Intenta de nuevo.'));
-}
-
-function abrirCanc(id) {
-  reservaActiva = reservas.find(r=>r.id===id);
-  if(!reservaActiva) return;
-  document.getElementById('mcanc-nom').textContent = reservaActiva.nombre;
-  document.getElementById('m-canc').classList.add('open');
-}
-
-async function ejecutarCanc() {
-  const r = reservaActiva; if(!r) return;
-  await sb.from('reservas').update({estado:'cancelada'}).eq('id', r.id);
-  // El trigger de Supabase manda el correo de cancelación automáticamente
-  cerrarM();
-  await cargarReservas();
-  renderStats(); renderPendientes(); renderConfirmadas(); renderHistorial();
-}
-
-function cerrarM() {
-  document.getElementById('m-conf').classList.remove('open');
-  document.getElementById('m-canc').classList.remove('open');
-}
-
-// ── BLOQUEOS ──
-function renderBloqueos() {
-  const hoy = isoF(new Date());
-  const activos = bloqueos.filter(b => {
-    if(b.tipo==='rango') return b.hasta >= hoy;
-    return (b.fecha || b.hasta || '') >= hoy;
+function estaBloqueado(fs) {
+  return bloqueos.some(b => {
+    if(b.tipo === 'rango') return fs >= b.desde && fs <= b.hasta;
+    if(b.tipo === 'dia') return b.fecha === fs;
+    return false;
   });
-  const el = document.getElementById('tc-bloqueos');
-  el.innerHTML = `
-    <div class="csec">
-      <h3>Bloqueos activos</h3>
-      <div class="blist">
-        ${activos.length === 0 ? '<p style="font-size:13px;color:var(--ca2);">No tienes bloqueos activos.</p>' : ''}
-        ${activos.map(b => `
-          <div class="bitem">
-            <div class="binfo">
-              <div class="btipo">${b.tipo==='rango'?'Descanso / vacaciones':b.tipo==='dia'?'Día completo bloqueado':'Horario específico bloqueado'}</div>
-              <div>${textoBloqueo(b)}</div>
-            </div>
-            <button class="bdelbtn" onclick="eliminarBloqueo('${b.id}')">×</button>
-          </div>
-        `).join('')}
-      </div>
-      <div class="addform">
-        <h4>Agregar bloqueo</h4>
-        <div class="ttabs">
-          <button class="ttab on" onclick="setTipoB('rango',this)">Rango (vacaciones / break)</button>
-          <button class="ttab" onclick="setTipoB('dia',this)">Día completo</button>
-          <button class="ttab" onclick="setTipoB('slot',this)">Horario específico</button>
-        </div>
-        <div id="bform-rango">
-          <div class="frow">
-            <div><label class="flbl">Desde</label><input type="date" class="finput" id="bl-desde" min="${hoy}"></div>
-            <div><label class="flbl">Hasta</label><input type="date" class="finput" id="bl-hasta" min="${hoy}"></div>
-          </div>
-          <div style="margin-bottom:10px;"><label class="flbl">Motivo (solo tú lo ves)</label><input type="text" class="finput" id="bl-mr" placeholder="vacaciones, congreso, descanso..."></div>
-        </div>
-        <div id="bform-dia" style="display:none;">
-          <div class="frow">
-            <div><label class="flbl">Fecha</label><input type="date" class="finput" id="bl-dia" min="${hoy}"></div>
-            <div><label class="flbl">Motivo (opcional)</label><input type="text" class="finput" id="bl-md" placeholder="evento familiar..."></div>
-          </div>
-        </div>
-        <div id="bform-slot" style="display:none;">
-          <div class="frow">
-            <div><label class="flbl">Fecha</label><input type="date" class="finput" id="bl-sf" min="${hoy}"></div>
-            <div><label class="flbl">Hora</label>
-              <select class="finput" id="bl-sh">
-                ${['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'].map(h=>`<option>${h}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-          <div style="margin-bottom:10px;"><label class="flbl">Motivo (opcional)</label><input type="text" class="finput" id="bl-ms" placeholder="cita médica..."></div>
-        </div>
-        <button class="badd" onclick="agregarBloqueo()">+ Agregar bloqueo</button>
-      </div>
-    </div>
-    ${bloqueos.filter(b=>{const h=isoF(new Date());return(b.fecha||b.hasta||'')<h&&(b.tipo!=='rango'||(b.hasta&&b.hasta<h));}).length>0?`
-    <div class="csec" style="opacity:.6;">
-      <h3>Bloqueos pasados</h3>
-      ${bloqueos.filter(b=>{const h=isoF(new Date());return(b.fecha||b.hasta||'')<h&&(b.tipo!=='rango'||(b.hasta&&b.hasta<h));}).slice(0,5).map(b=>`
-        <div style="font-size:13px;color:var(--ca2);padding:6px 0;border-bottom:1px solid var(--b);">${textoBloqueo(b)}</div>
-      `).join('')}
-    </div>`:''}
-  `;
 }
 
-function textoBloqueo(b) {
-  if(b.tipo==='rango') return `Del ${fLarga(b.desde)} al ${fLarga(b.hasta)}${b.motivo?' — '+b.motivo:''}`;
-  if(b.tipo==='dia') return `${fLarga(b.fecha)} (todo el día)${b.motivo?' — '+b.motivo:''}`;
-  if(b.tipo==='slot') return `${fLarga(b.fecha)} a las ${b.hora} hrs${b.motivo?' — '+b.motivo:''}`;
-  return '';
+function horaBloqueada(fs, h) {
+  return bloqueos.some(b => b.tipo === 'slot' && b.fecha === fs && b.hora === h);
 }
 
-function setTipoB(t, el) {
-  tipoBloqueo = t;
-  document.querySelectorAll('.ttab').forEach(x=>x.classList.remove('on')); el.classList.add('on');
-  document.getElementById('bform-rango').style.display = t==='rango'?'block':'none';
-  document.getElementById('bform-dia').style.display = t==='dia'?'block':'none';
-  document.getElementById('bform-slot').style.display = t==='slot'?'block':'none';
-}
-
-async function agregarBloqueo() {
-  let data = { tipo: tipoBloqueo, id: 'B' + Date.now() };
-  if(tipoBloqueo==='rango') {
-    const desde = document.getElementById('bl-desde').value;
-    const hasta = document.getElementById('bl-hasta').value;
-    if(!desde||!hasta||hasta<desde) { alert('Selecciona un rango válido.'); return; }
-    data = {...data, desde, hasta, motivo: document.getElementById('bl-mr').value.trim()};
-  } else if(tipoBloqueo==='dia') {
-    const fecha = document.getElementById('bl-dia').value;
-    if(!fecha) { alert('Selecciona una fecha.'); return; }
-    data = {...data, fecha, motivo: document.getElementById('bl-md').value.trim()};
-  } else {
-    const fecha = document.getElementById('bl-sf').value;
-    if(!fecha) { alert('Selecciona una fecha.'); return; }
-    data = {...data, fecha, hora: document.getElementById('bl-sh').value, motivo: document.getElementById('bl-ms').value.trim()};
+function horariosDelDia(diaSemana) {
+  if(cfg.horarios_por_dia && cfg.horarios_por_dia[diaSemana]) {
+    return cfg.horarios_por_dia[diaSemana];
   }
-  await sb.from('bloqueos').insert([data]);
-  await cargarBloqueos();
-  renderBloqueos(); renderStats();
+  return cfg.horarios_disponibles || [];
 }
 
-async function eliminarBloqueo(id) {
-  if(!confirm('¿Eliminar este bloqueo?')) return;
-  await sb.from('bloqueos').delete().eq('id', id);
-  await cargarBloqueos();
-  renderBloqueos(); renderStats();
+function tieneHorasLibres(fs) {
+  if(estaBloqueado(fs)) return false;
+  const diaSemana = new Date(fs + 'T12:00:00').getDay();
+  const horas = horariosDelDia(diaSemana);
+  return horas.some(h => !slotsOcupados.includes(fs+'|'+h) && !horaBloqueada(fs, h));
 }
 
-// ── CONFIG ──
-function renderConfig() {
-  document.getElementById('tc-config').innerHTML = `
-    <div class="csec">
-      <h3>Datos de pago</h3>
-      <div class="cf"><label>CLABE interbancaria</label><input type="text" id="cfg-clabe" value="${cfg.clabe||''}"></div>
-      <div class="cf"><label>Banco</label><input type="text" id="cfg-banco" value="${cfg.banco||'BBVA'}"></div>
-      <div class="cf"><label>Nombre del titular</label><input type="text" id="cfg-titular" value="${cfg.titular||''}"></div>
-    </div>
-
-    <div class="csec">
-      <h3>Horarios por día</h3>
-      <p style="font-size:13px;color:var(--ca2);margin-bottom:16px;line-height:1.6;">
-        Activa los días que trabajas y define los horarios de cada uno por separado.
-        Puedes escribir cualquier hora en formato HH:MM y presionar Enter o el botón + para agregarla.
-      </p>
-      <div id="dias-config">
-        ${[0,1,2,3,4,5,6].map(d => renderDiaConfig(d)).join('')}
-      </div>
-    </div>
-
-    <div class="csec">
-      <h3>Reglas de agendado</h3>
-      <div class="cf">
-        <label>Días mínimos de anticipación</label>
-        <select id="cfg-ant">
-          ${[1,2,3,4,5,7].map(n=>`<option value="${n}"${cfg.anticipacion_dias===n?' selected':''}>${n} día${n>1?'s':''}</option>`).join('')}
-        </select>
-      </div>
-      <div class="cf">
-        <label>Máximo días hacia el futuro para agendar</label>
-        <select id="cfg-max">
-          ${[7,10,14,21,30].map(n=>`<option value="${n}"${cfg.max_dias_adelante===n?' selected':''}>Hasta ${n} días adelante</option>`).join('')}
-        </select>
-      </div>
-    </div>
-
-    <div class="csec">
-      <h3>Notificaciones</h3>
-      <div class="cf"><label>Tu correo para recibir avisos</label><input type="email" id="cfg-email" value="${cfg.email_silvia||''}"></div>
-    </div>
-
-    <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-      <button class="bsave" onclick="guardarCfg()">Guardar cambios</button>
-      <span class="saveok" id="saveok">✓ Guardado</span>
-    </div>
-  `;
+function formatHora(h) {
+  const [hh, mm] = h.split(':');
+  const hn = parseInt(hh);
+  const suf = hn >= 12 ? 'p.m.' : 'a.m.';
+  const h12 = hn % 12 || 12;
+  return h12 + ':' + mm + ' ' + suf;
 }
 
-function renderDiaConfig(d) {
-  const activo = diasSel.includes(d);
-  const horas = horariosPorDia[d] || [];
-  return `
-    <div class="dia-row" id="dia-row-${d}" style="border:1px solid var(--b);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px;background:${activo?'white':'rgba(0,0,0,0.02)'};">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${activo?'12px':'0'};">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div class="tg${activo?' on':''}" onclick="toggleDia(${d})" style="cursor:pointer;min-width:36px;text-align:center;">${activo?'✓':'○'}</div>
-          <span style="font-size:14px;font-weight:${activo?'500':'400'};color:${activo?'var(--ca)':'var(--ca2)'};">${DIASN_FULL[d]}</span>
-        </div>
-        ${activo?`<span style="font-size:12px;color:var(--ca2);">${horas.length} horario${horas.length!==1?'s':''}</span>`:'<span style="font-size:12px;color:var(--ca2);">Inactivo</span>'}
-      </div>
-      ${activo?`
-        <div id="horas-dia-${d}" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
-          ${horas.sort().map(h=>`
-            <div style="display:flex;align-items:center;gap:4px;background:var(--ob);border:1px solid var(--obo);border-radius:40px;padding:4px 10px;">
-              <span style="font-size:13px;color:var(--ok);font-family:monospace;">${h}</span>
-              <button onclick="quitarHora(${d},'${h}')" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:14px;line-height:1;padding:0 2px;opacity:.7;" title="Quitar">×</button>
-            </div>
-          `).join('')}
-          ${horas.length===0?'<span style="font-size:13px;color:var(--ca2);font-style:italic;">Sin horarios — agrega al menos uno</span>':''}
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="time" id="inp-hora-${d}" style="padding:7px 10px;border:1px solid var(--b2);border-radius:var(--r);font-size:14px;font-family:inherit;outline:none;" onkeydown="if(event.key==='Enter')agregarHora(${d})">
-          <button onclick="agregarHora(${d})" class="badd">+ Agregar</button>
-        </div>
-      `:''}
-    </div>
-  `;
-}
+function renderCal() {
+  const mesLbl = document.getElementById('cal-mes');
+  const grid = document.getElementById('cal-grid');
+  if(!mesLbl || !grid) return;
 
-function toggleDia(d) {
-  if(diasSel.includes(d)) {
-    diasSel = diasSel.filter(x => x !== d);
-  } else {
-    diasSel.push(d);
-    if(!horariosPorDia[d]) horariosPorDia[d] = [];
-  }
-  // Re-renderizar solo la sección de días
-  document.getElementById('dias-config').innerHTML = [0,1,2,3,4,5,6].map(x => renderDiaConfig(x)).join('');
-}
+  mesLbl.textContent = MESES[mesActual.getMonth()] + ' ' + mesActual.getFullYear();
+  grid.innerHTML = '';
+  DIAS_L.forEach(d => { const e = document.createElement('div'); e.className = 'cdl'; e.textContent = d; grid.appendChild(e); });
 
-function agregarHora(d) {
-  const inp = document.getElementById('inp-hora-' + d);
-  const val = inp.value.trim();
-  if(!val) return;
-  // Normalizar a HH:MM
-  const h = val.length === 5 ? val : val.substring(0,5);
-  if(!horariosPorDia[d]) horariosPorDia[d] = [];
-  if(!horariosPorDia[d].includes(h)) {
-    horariosPorDia[d].push(h);
-    horariosPorDia[d].sort();
-  }
-  inp.value = '';
-  document.getElementById('horas-dia-' + d).innerHTML = horariosPorDia[d].sort().map(ho=>`
-    <div style="display:flex;align-items:center;gap:4px;background:var(--ob);border:1px solid var(--obo);border-radius:40px;padding:4px 10px;">
-      <span style="font-size:13px;color:var(--ok);font-family:monospace;">${ho}</span>
-      <button onclick="quitarHora(${d},'${ho}')" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:14px;line-height:1;padding:0 2px;opacity:.7;">×</button>
-    </div>
-  `).join('') + (horariosPorDia[d].length===0?'<span style="font-size:13px;color:var(--ca2);font-style:italic;">Sin horarios</span>':'');
-  // Actualizar contador
-  document.getElementById('dia-row-' + d).querySelector('span:last-of-type') && document.getElementById('dias-config').children[d].querySelector('.tg').nextElementSibling.nextElementSibling && null;
-}
-
-function quitarHora(d, h) {
-  horariosPorDia[d] = (horariosPorDia[d] || []).filter(x => x !== h);
-  document.getElementById('horas-dia-' + d).innerHTML = horariosPorDia[d].sort().map(ho=>`
-    <div style="display:flex;align-items:center;gap:4px;background:var(--ob);border:1px solid var(--obo);border-radius:40px;padding:4px 10px;">
-      <span style="font-size:13px;color:var(--ok);font-family:monospace;">${ho}</span>
-      <button onclick="quitarHora(${d},'${ho}')" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:14px;line-height:1;padding:0 2px;opacity:.7;">×</button>
-    </div>
-  `).join('') + (horariosPorDia[d].length===0?'<span style="font-size:13px;color:var(--ca2);font-style:italic;">Sin horarios — agrega al menos uno</span>':'');
-}
-
-async function guardarCfg() {
-  // Calcular lista plana de horarios (unión de todos los días) para compatibilidad con landing
-  const todosHorarios = [...new Set(Object.values(horariosPorDia).flat())].sort();
-  const data = {
-    clabe: document.getElementById('cfg-clabe').value.trim(),
-    banco: document.getElementById('cfg-banco').value.trim(),
-    titular: document.getElementById('cfg-titular').value.trim(),
-    email_silvia: document.getElementById('cfg-email').value.trim(),
-    dias_disponibles: [...diasSel].sort((a,b)=>a-b),
-    horarios_disponibles: todosHorarios,
-    horarios_por_dia: horariosPorDia,
-    anticipacion_dias: parseInt(document.getElementById('cfg-ant').value),
-    max_dias_adelante: parseInt(document.getElementById('cfg-max').value)
-  };
-  await sb.from('configuracion').update(data).eq('id', 1);
-  cfg = {...cfg, ...data};
-  const ok = document.getElementById('saveok'); ok.classList.add('show'); setTimeout(()=>ok.classList.remove('show'), 2000);
-}
-
-// ── CALENDARIO PANEL ──
-let calMes = new Date(); calMes.setDate(1);
-let diaSeleccionado = null;
-
-function renderCalendario() {
-  const el = document.getElementById('tc-calendario');
   const hoy = new Date(); hoy.setHours(0,0,0,0);
-  const MESES_C = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const DIAS_C = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const minF = new Date(hoy); minF.setDate(hoy.getDate() + (cfg.anticipacion_dias || 1));
+  const maxF = new Date(hoy); maxF.setDate(hoy.getDate() + (cfg.max_dias_adelante || 14));
 
-  const pri = new Date(calMes.getFullYear(), calMes.getMonth(), 1);
-  const ult = new Date(calMes.getFullYear(), calMes.getMonth()+1, 0);
+  const pri = new Date(mesActual.getFullYear(), mesActual.getMonth(), 1);
+  const ult = new Date(mesActual.getFullYear(), mesActual.getMonth()+1, 0);
 
-  // Mapear reservas por fecha
-  const resByFecha = {};
-  reservas.forEach(r => {
-    if(!resByFecha[r.fecha]) resByFecha[r.fecha] = [];
-    resByFecha[r.fecha].push(r);
-  });
-
-  // Mapear bloqueos
-  function esBloqueado(fs) {
-    return bloqueos.some(b => {
-      if(b.tipo==='rango') return fs>=b.desde && fs<=b.hasta;
-      if(b.tipo==='dia') return b.fecha===fs;
-      return false;
-    });
-  }
-  function bloqueosDia(fs) {
-    return bloqueos.filter(b => {
-      if(b.tipo==='rango') return fs>=b.desde && fs<=b.hasta;
-      if(b.tipo==='dia') return b.fecha===fs;
-      if(b.tipo==='slot') return b.fecha===fs;
-      return false;
-    });
+  for(let i = 0; i < pri.getDay(); i++) {
+    const e = document.createElement('div'); e.className = 'cd emp'; grid.appendChild(e);
   }
 
-  // Generar días
-  let diasHTML = DIAS_C.map(d=>`<div class="pcal-dl">${d}</div>`).join('');
-
-  // Espacios vacíos al inicio
-  for(let i=0; i<pri.getDay(); i++) {
-    diasHTML += `<div class="pcal-day otro-mes"></div>`;
-  }
-
-  for(let d=1; d<=ult.getDate(); d++) {
-    const fecha = new Date(calMes.getFullYear(), calMes.getMonth(), d);
+  for(let d = 1; d <= ult.getDate(); d++) {
+    const fecha = new Date(mesActual.getFullYear(), mesActual.getMonth(), d);
     const fs = isoF(fecha);
-    const esHoy = fecha.getTime()===hoy.getTime();
-    const blk = esBloqueado(fs);
-    const sesiones = (resByFecha[fs]||[]).filter(r=>['pendiente','confirmada'].includes(r.estado));
-    const bDia = bloqueosDia(fs);
+    const el = document.createElement('div');
+    el.textContent = d;
+    const esHoy = fecha.getTime() === hoy.getTime();
+    if(esHoy) el.classList.add('hoy');
+    const diasDisp = cfg.dias_disponibles || [1,2,3,4,5];
+    const disp = fecha >= minF && fecha <= maxF && diasDisp.includes(fecha.getDay()) && tieneHorasLibres(fs);
+    if(fechaSel && fs === isoF(fechaSel)) el.className = 'cd sel' + (esHoy?' hoy':'');
+    else if(disp) { el.className = 'cd av' + (esHoy?' hoy':''); el.onclick = () => selFecha(fecha); }
+    else el.className = 'cd ' + (fecha < minF || fecha > maxF ? 'pas' : 'blk') + (esHoy?' hoy':'');
+    grid.appendChild(el);
+  }
 
-    let cls = 'pcal-day';
-    if(esHoy) cls += ' hoy';
-    if(blk) cls += ' bloqueado';
+  // Deshabilitar botones si estamos en el mes actual
+  const btnPrev = document.getElementById('cal-prev');
+  const hoyMes = new Date(); hoyMes.setDate(1); hoyMes.setHours(0,0,0,0);
+  btnPrev.disabled = mesActual.getTime() <= hoyMes.getTime();
+}
 
-    let eventosHTML = '';
-    sesiones.forEach(r => {
-      const cls2 = r.estado==='confirmada'?'ev-conf':'ev-pend';
-      eventosHTML += `<div class="pcal-evento ${cls2}" onclick="verDia('${fs}')" title="${r.nombre} · ${r.hora}">${r.hora} ${r.nombre.split(' ')[0]}</div>`;
-    });
-    bDia.filter(b=>b.tipo==='slot').forEach(b => {
-      eventosHTML += `<div class="pcal-evento ev-blk">${b.hora} bloqueado</div>`;
-    });
-    if(blk && bDia.some(b=>b.tipo!=='slot')) {
-      eventosHTML = `<div class="pcal-evento ev-blk">Sin sesiones</div>` + eventosHTML;
+function selFecha(f) {
+  fechaSel = f; horaSel = null;
+  document.getElementById('btn-ag2').disabled = false;
+  renderCal();
+}
+
+function cambiarMes(d) {
+  mesActual.setMonth(mesActual.getMonth()+d);
+  renderCal();
+}
+
+// ─── HORARIOS ───
+function renderHorarios() {
+  const grid = document.getElementById('h-grid');
+  const lbl = document.getElementById('fecha-lbl');
+  const fs = isoF(fechaSel);
+  const diaSemana = fechaSel.getDay();
+  const horas = horariosDelDia(diaSemana);
+
+  lbl.textContent = fechaLarga(fechaSel).charAt(0).toUpperCase() + fechaLarga(fechaSel).slice(1);
+  grid.innerHTML = '';
+
+  if(horas.length === 0) {
+    grid.innerHTML = '<p style="font-size:14px;color:var(--text-2);grid-column:1/-1;text-align:center;padding:20px">No hay horarios disponibles para este día.</p>';
+    return;
+  }
+
+  horas.sort().forEach(h => {
+    const ocup = slotsOcupados.includes(fs+'|'+h) || horaBloqueada(fs, h);
+    const btn = document.createElement('button');
+    btn.className = 'hb' + (ocup?' ocup':'') + (horaSel===h?' sel':'');
+    btn.textContent = formatHora(h);
+    btn.disabled = ocup;
+    if(!ocup) btn.onclick = () => { horaSel = h; renderHorarios(); document.getElementById('btn-ag3').disabled = false; };
+    grid.appendChild(btn);
+  });
+}
+
+// ─── WIZARD ───
+function mostrarPaso(n) {
+  agPasoN = n;
+  document.querySelectorAll('.wstep').forEach((s,i) => s.classList.toggle('wa', i === n-1));
+
+  // Steps dots
+  for(let i = 1; i <= 4; i++) {
+    const dot = document.getElementById('sd' + i);
+    if(!dot) continue;
+    dot.classList.remove('done','current');
+    if(i < n) dot.classList.add('done');
+    else if(i === n && n <= 4) dot.classList.add('current');
+  }
+
+  // Ocultar dots en éxito
+  const dotsWrap = document.querySelector('.steps-dots');
+  if(dotsWrap) dotsWrap.style.display = n === 5 ? 'none' : 'flex';
+
+  // Ocultar botón back en éxito
+  const backBtn = document.getElementById('ag-back-btn');
+  if(backBtn) backBtn.style.display = n === 5 ? 'none' : 'inline-flex';
+
+  const header = document.querySelector('.ag-header');
+  const scarcity = document.querySelector('.scarcity-banner');
+  if(header) header.style.display = n === 5 ? 'none' : 'block';
+  if(scarcity) scarcity.style.display = n === 5 ? 'none' : 'flex';
+
+  document.getElementById('view-agendar').scrollTop = 0;
+}
+
+function agPaso(n) {
+  if(n === 2) {
+    renderHorarios();
+    document.getElementById('btn-ag3').disabled = !horaSel;
+  }
+  if(n === 3) {
+    llenarDiasAnios();
+    validarPaso3();
+  }
+  if(n === 4) {
+    llenarResumen();
+  }
+  mostrarPaso(n);
+}
+
+// ─── PASO 3: DATOS ───
+function llenarDiasAnios() {
+  const diaSel = document.getElementById('inp-dia-jugador');
+  const anioSel = document.getElementById('inp-anio-jugador');
+  if(diaSel.children.length === 1) {
+    for(let d = 1; d <= 31; d++) {
+      const opt = document.createElement('option'); opt.value = String(d).padStart(2,'0'); opt.textContent = d;
+      diaSel.appendChild(opt);
     }
-
-    diasHTML += `
-      <div class="${cls}" onclick="verDia('${fs}')" style="cursor:pointer;">
-        <div class="pcal-num">${d}</div>
-        ${eventosHTML}
-      </div>`;
   }
-
-  // Detalle del día seleccionado
-  let detalleHTML = '';
-  if(diaSeleccionado) {
-    const sesionesD = (resByFecha[diaSeleccionado]||[]).filter(r=>['pendiente','confirmada'].includes(r.estado));
-    const bloqueosD = bloqueosDia(diaSeleccionado);
-    const fechaD = new Date(diaSeleccionado+'T12:00:00');
-    const fLargaD = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][fechaD.getDay()]+', '+fechaD.getDate()+' de '+MESES_C[fechaD.getMonth()].toLowerCase()+' '+fechaD.getFullYear();
-
-    detalleHTML = `
-      <div class="dia-detalle">
-        <h3>${fLargaD}</h3>
-        ${sesionesD.length===0 && bloqueosD.filter(b=>b.tipo!=='slot').length===0 ? '<p style="font-size:13px;color:var(--ca2);">Sin sesiones agendadas.</p>' : ''}
-        ${bloqueosD.filter(b=>b.tipo==='rango'||b.tipo==='dia').map(b=>`<div class="dia-bloqueo">🚫 Día bloqueado${b.motivo?' — '+b.motivo:''}</div>`).join('')}
-        ${sesionesD.sort((a,b)=>a.hora.localeCompare(b.hora)).map(r=>`
-          <div class="dia-sesion ${r.estado==='confirmada'?'conf':'pend'}">
-            <h4>${r.hora} hrs · ${r.nombre}</h4>
-            <p>${r.estado==='confirmada'?'✓ Confirmada':'⏳ Pendiente de pago'} · ${r.email} · ${r.tel}</p>
-          </div>
-        `).join('')}
-        ${bloqueosD.filter(b=>b.tipo==='slot').map(b=>`<div class="dia-bloqueo">🚫 ${b.hora} hrs bloqueado${b.motivo?' — '+b.motivo:''}</div>`).join('')}
-      </div>`;
+  if(anioSel.children.length === 1) {
+    const hoy = new Date().getFullYear();
+    for(let a = hoy; a >= hoy - 40; a--) {
+      const opt = document.createElement('option'); opt.value = String(a); opt.textContent = a;
+      anioSel.appendChild(opt);
+    }
   }
-
-  el.innerHTML = `
-    <div class="pcal-nav">
-      <button class="pcal-btn" onclick="cambiarMesCal(-1)">‹</button>
-      <span class="pcal-mes">${MESES_C[calMes.getMonth()]} ${calMes.getFullYear()}</span>
-      <button class="pcal-btn" onclick="cambiarMesCal(1)">›</button>
-    </div>
-    <div class="pcal-grid">${diasHTML}</div>
-    <div class="pcal-leyenda">
-      <div class="pcal-leg"><div class="pcal-leg-dot ev-conf"></div>Confirmada</div>
-      <div class="pcal-leg"><div class="pcal-leg-dot ev-pend"></div>Pendiente de pago</div>
-      <div class="pcal-leg"><div class="pcal-leg-dot" style="background:rgba(193,127,10,.15);border:1px solid rgba(193,127,10,.3);"></div>Bloqueado</div>
-    </div>
-    ${detalleHTML}
-  `;
 }
 
-function cambiarMesCal(d) {
-  calMes.setMonth(calMes.getMonth()+d);
-  renderCalendario();
+function validarPaso3() {
+  const nomTutor = document.getElementById('inp-nom-tutor').value.trim();
+  const emailTutor = document.getElementById('inp-email-tutor').value.trim();
+  const telTutor = document.getElementById('inp-tel-tutor').value.trim();
+  const nomJugador = document.getElementById('inp-nom-jugador').value.trim();
+  const dia = document.getElementById('inp-dia-jugador').value;
+  const mes = document.getElementById('inp-mes-jugador').value;
+  const anio = document.getElementById('inp-anio-jugador').value;
+  const posicion = document.getElementById('inp-pos-jugador').value;
+  const fuente = document.getElementById('inp-fuente').value;
+
+  const ok = nomTutor.length > 2 &&
+    emailTutor.includes('@') &&
+    telTutor.length >= 7 &&
+    nomJugador.length > 2 &&
+    dia && mes && anio &&
+    posicion && fuente;
+
+  document.getElementById('btn-ag4').disabled = !ok;
 }
 
-function verDia(fs) {
-  diaSeleccionado = diaSeleccionado===fs ? null : fs;
-  renderCalendario();
+// ─── PASO 4: RESUMEN ───
+const POSICIONES = {
+  DC:'Defensa Central', LD:'Lateral Derecho', LI:'Lateral Izquierdo',
+  MCD:'Mediocampista Defensivo', MC:'Mediocampista Central',
+  MCO:'Mediocampista Ofensivo', ED:'Extremo Derecho', EI:'Extremo Izquierdo',
+  DLC:'Delantero Centro', POR:'Portero'
+};
+
+function llenarResumen() {
+  document.getElementById('res-fecha').textContent = fechaLarga(fechaSel);
+  document.getElementById('res-hora').textContent = formatHora(horaSel);
+  document.getElementById('res-tutor').textContent = document.getElementById('inp-nom-tutor').value.trim();
+  document.getElementById('res-email').textContent = document.getElementById('inp-email-tutor').value.trim();
+  document.getElementById('res-jugador').textContent = document.getElementById('inp-nom-jugador').value.trim();
+  document.getElementById('res-pos').textContent = POSICIONES[document.getElementById('inp-pos-jugador').value] || '';
 }
 
-// ── CONCEPTO DE PAGO ──
-function generarConcepto(nombre) {
-  // Quitar acentos, convertir a mayúsculas, quitar caracteres especiales
-  const limpio = nombre.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
-  const concepto = 'SB ' + limpio;
-  return concepto.substring(0, 40); // máximo 40 caracteres SPEI
-}
+// ─── CONFIRMAR RESERVA ───
+async function confirmarReserva() {
+  const btn = document.getElementById('btn-confirmar');
+  const errorDiv = document.getElementById('error-reserva');
+  btn.disabled = true;
+  btn.innerHTML = 'Guardando reserva...';
+  errorDiv.innerHTML = '';
 
-// ── TABS (actualizado con calendario) ──
-const TIDS = ['pendientes','confirmadas','calendario','historial','bloqueos','config'];
-function showTab(id) {
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', TIDS[i]===id));
-  document.querySelectorAll('.tc').forEach((c,i)=>c.classList.toggle('active', TIDS[i]===id));
-  if(id==='calendario') renderCalendario();
-}
+  const nombreTutor = document.getElementById('inp-nom-tutor').value.trim();
+  const emailTutor = document.getElementById('inp-email-tutor').value.trim();
+  const ladaTutor = document.getElementById('inp-lada-tutor').value.replace('-CA','-1').replace('-DO','-1').replace('-PR','-1');
+  const telTutor = document.getElementById('inp-tel-tutor').value.trim();
+  const whatsappTutor = ladaTutor + ' ' + telTutor;
 
-// ── INICIO ──
-checkSession();
+  const nombreJugador = document.getElementById('inp-nom-jugador').value.trim();
+  const dia = document.getElementById('inp-dia-jugador').value;
+  const mes = document.getElementById('inp-mes-jugador').value;
+  const anio = document.getElementById('inp-anio-jugador').value;
+  const fnacJugador = anio + '-' + mes + '-' + dia;
+  const posicionJugador = document.getElementById('inp-pos-jugador').value;
+
+  const emailJugador = document.getElementById('inp-email-jugador').value.trim() || null;
+  const telJugadorNum = document.getElementById('inp-tel-jugador').value.trim();
+  const ladaJugador = document.getElementById('inp-lada-jugador').value;
+  const whatsappJugador = telJugadorNum ? (ladaJugador + ' ' + telJugadorNum) : null;
+
+  const fuente = document.getElementById('inp-fuente').value;
+  const zonaUser = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const reserva = {
+    id: 'R' + Date.now(),
+    nombre_tutor: nombreTutor,
+    email_tutor: emailTutor,
+    whatsapp_tutor: whatsappTutor,
+    nombre_jugador: nombreJugador,
+    fecha_nacimiento_jugador: fnacJugador,
+    posicion_jugador: posicionJugador,
+    email_jugador: emailJugador,
+    whatsapp_jugador: whatsappJugador,
+    fecha: isoF(fechaSel),
+    fecha_larga: fechaLarga(fechaSel),
+    hora: horaSel,
+    hora_display: formatHora(horaSel),
+    zona_horaria: zonaUser,
+    como_nos_encontro: fuente,
+    estado: 'pendiente'
+  };
+
+  try {
+    const { error } = await sb.from('reservas').insert([reserva]);
+    if(error) throw error;
+
+    document.getElementById('ok-fecha').textContent = reserva.fecha_larga;
+    document.getElementById('ok-hora').textContent = reserva.hora_display;
+    document.getElementById('ok-email').textContent = emailTutor;
+    mostrarPaso(5);
+  } catch(err) {
+    console.error(err);
+    errorDiv.innerHTML = '<div class="error-msg">Hubo un problema al guardar tu reserva. Inténtalo de nuevo o escríbenos por Instagram <a href="https://instagram.com/forja_futbol" style="color:var(--gold)">@forja_futbol</a></div>';
+    btn.disabled = false;
+    btn.innerHTML = 'Confirmar reunión <span class="arrow">→</span>';
+  }
+}
 </script>
+
 </body>
 </html>
