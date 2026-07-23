@@ -201,7 +201,7 @@ body{font-family:'Inter',sans-serif;background:#f5f4f0;color:var(--ca);min-heigh
 <div class="mbg" id="m-conf">
   <div class="modal">
     <h3>Confirmar pago recibido</h3>
-    <p>¿Confirmas que recibiste la transferencia de <strong>$500 MXN</strong> de <strong id="mc-nom"></strong>?</p>
+    <p>¿Confirmas que recibiste la transferencia de <strong>$555 MXN</strong> de <strong id="mc-nom"></strong>?</p>
     <p style="font-size:13px;color:var(--ca2);">Al confirmar, se enviará automáticamente el correo de preparación a la clienta.</p>
     <div class="macts">
       <button class="mbpr" onclick="ejecutarConf()">✓ Sí, confirmar sesión</button>
@@ -315,7 +315,7 @@ async function cargarCfg() {
 function renderStats() {
   const pend = reservas.filter(r=>r.estado==='pendiente').length;
   const conf = reservas.filter(r=>r.estado==='confirmada').length;
-  const ing = conf * 500;
+  const ing = conf * 555;
   const bl = bloqueos.filter(b => {
     const hoy = isoF(new Date());
     if(b.tipo==='rango') return b.hasta >= hoy;
