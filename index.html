@@ -11,6 +11,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7CWNKKHYPD"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7CWNKKHYPD');
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -679,6 +687,8 @@ function openView(id, e) {
   currentView = id;
   el.style.display = 'block';
   el.scrollTop = 0;
+  // Google Analytics — rastrear sección visitada
+  if(typeof gtag === 'function') gtag('event', 'view_section', { section_name: id });
   if(id === 'agendar') { agPasoN = 1; mostrarPaso(1); cargarDatos(); }
   requestAnimationFrame(() => requestAnimationFrame(() => {
     el.classList.add('open', 'visible');
@@ -821,6 +831,9 @@ function mostrarPaso(n) {
 }
 
 function agPaso(n) {
+  // Google Analytics — rastrear paso del proceso de agendar
+  var pasoNombres = {1:'elegir_fecha', 2:'elegir_hora_datos', 3:'resumen_pago'};
+  if(typeof gtag === 'function' && pasoNombres[n]) gtag('event', 'agendar_paso', { paso: pasoNombres[n], paso_num: n });
   if(n === 2) { document.getElementById('fecha-lbl').textContent = fechaLarga(fechaSel); renderHorarios(); validarAg2(); }
   if(n === 3) {
     document.getElementById('res-fecha').textContent = fechaLarga(fechaSel);
@@ -873,6 +886,8 @@ async function confirmarReserva() {
     if(error) throw error;
     // Resend manda el correo automáticamente via trigger de Supabase
     // No necesitamos abrir Outlook
+    // Google Analytics — reserva completada
+    if(typeof gtag === 'function') gtag('event', 'reserva_completada', { fecha: reserva.fecha_larga, hora: horaSel });
     // Paso 4
     document.getElementById('email-pend').textContent = email;
     document.getElementById('pend-fecha').textContent = reserva.fecha_larga;
